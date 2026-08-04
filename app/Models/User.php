@@ -2,58 +2,75 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
+    // Konstanta Role
+    const ROLE_USER        = 'user';
+    const ROLE_MANAGER     = 'admin_maskapai';
+    const ROLE_SUPER_ADMIN = 'admin';
+
     protected $fillable = [
         'name',
         'email',
         'password',
+        'role',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'password'          => 'hashed',
         ];
     }
-    public function airline()
-    {
-    return $this->belongsTo(Airline::class);
-    }
 
+    // ========== RELASI ==========
     public function bookings()
     {
-    return $this->hasMany(Booking::class);
+        return $this->hasMany(Booking::class);
     }
-    
+
+    public function payments()
+    {
+        return $this->hasManyThrough(Payment::class, Booking::class);
+    }
+
+    // ========== HELPER ROLE ==========
+    public function isUser()
+    {
+        return $this->role === self::ROLE_USER;
+    }
+
+    public function isManager()
+    {
+        return $this->role === self::ROLE_MANAGER;
+    }
+
+    public function isSuperAdmin()
+    {
+        return $this->role === self::ROLE_SUPER_ADMIN;
+    }
+
+    // Cek apakah user memiliki salah satu role tertentu
+    public function hasRole($role)
+    {
+        return $this->role === $role;
+    }
+
+    // Cek apakah user termasuk dalam array role
+    public function hasAnyRole(array $roles)
+    {
+        return in_array($this->role, $roles);
+    }
 }

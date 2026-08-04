@@ -13,6 +13,15 @@ return new class extends Migration
     {
         Schema::create('flights', function (Blueprint $table) {
             $table->id();
+            $table->string('airline');              // Nama maskapai
+            $table->string('origin');               // Kota asal
+            $table->string('destination');          // Kota tujuan
+            $table->timestamp('departure_time');    // Waktu keberangkatan
+            $table->timestamp('arrival_time');      // Waktu kedatangan
+            $table->decimal('price', 12, 2);        // Harga tiket
+            $table->integer('capacity');            // Kapasitas total
+            $table->integer('available_seats');     // Kursi tersisa
+            $table->string('status')->default('active'); // Status: active, cancelled, etc.
             $table->timestamps();
         });
     }
