@@ -217,12 +217,12 @@
         text-transform: uppercase;
         letter-spacing: 0.04em;
     }
-    .role-badge.super_admin, .role-badge.admin {
+    .role-badge.super_admin {
         background: rgba(239, 68, 68, 0.08);
         color: #991b1b;
         border: 1px solid rgba(239, 68, 68, 0.1);
     }
-    .role-badge.manager, .role-badge.admin_maskapai {
+    .role-badge.manager {
         background: rgba(245, 158, 11, 0.08);
         color: #92400e;
         border: 1px solid rgba(245, 158, 11, 0.1);
