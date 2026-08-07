@@ -12,13 +12,19 @@ class RoleMiddleware
         if (!auth()->check()) {
             return redirect('/login');
         }
-
+        
         $userRole = auth()->user()->role;
-
+        
         if (!in_array($userRole, $roles)) {
-            abort(403, 'Anda tidak punya akses ke halaman ini!');
+            // [Magfi Adi Radza Putra] - Redirect ke dashboard sesuai role
+            if ($userRole === 'super_admin') {
+                return redirect()->route('superadmin.dashboard')->with('error', 'Akses ditolak!');
+            } elseif ($userRole === 'manager') {
+                return redirect()->route('manager.dashboard')->with('error', 'Akses ditolak!');
+            }
+            return redirect()->route('user.dashboard')->with('error', 'Akses ditolak!');
         }
-
+        
         return $next($request);
     }
 }

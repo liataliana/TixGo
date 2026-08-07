@@ -1,4 +1,5 @@
 <?php
+// [Magfi Adi Radza Putra] - Routes TixGo E-Ticketing System
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\ProfileController;
@@ -13,9 +14,10 @@ use App\Http\Controllers\HotelController;
 use App\Http\Controllers\VillaController;
 use App\Http\Controllers\BusController;
 use App\Http\Controllers\TrainController;
+use App\Http\Controllers\TicketController;
 
 // =======================================================
-// LOGOUT DARURAT & HOME
+// LOGOUT DARURAT & HOME / LANDING PAGE
 // =======================================================
 Route::get('/force-logout', function (Request $request) {
     auth()->logout();
@@ -24,27 +26,28 @@ Route::get('/force-logout', function (Request $request) {
     return redirect('/login');
 });
 
+// [Magfi Adi Radza Putra] - Landing Page (PUBLIC, tanpa auth)
 Route::get('/', function () { return view('home'); })->name('home');
 
 // =======================================================
-// AUTH
+// AUTH (Login, Register, dll)
 // =======================================================
 require __DIR__ . '/auth.php';
 
 // =======================================================
 // DASHBOARD REDIRECT (Setelah Login)
+// [Magfi Adi Radza Putra] - Redirect otomatis berdasarkan role
 // =======================================================
 Route::get('/dashboard', function () {
-    $user = auth()->user();
-    $role = $user->role;
+    $role = auth()->user()->role;
     
-    if ($role === 'super_admin' || $role === 'admin') {
-        return redirect('/superadmin/dashboard');  // ✅ URL LANGSUNG
+    if ($role === 'super_admin') {
+        return redirect()->route('superadmin.dashboard');
     }
-    if ($role === 'manager' || $role === 'admin_maskapai') {
-        return redirect('/manager/dashboard');     // ✅ URL LANGSUNG
+    if ($role === 'manager') {
+        return redirect()->route('manager.dashboard');
     }
-    return redirect('/user/home');  // ✅ URL LANGSUNG KE HOME USER
+    return redirect()->route('user.dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 // =======================================================
@@ -60,9 +63,10 @@ Route::middleware(['auth', 'role:user'])->prefix('user')->name('user.')->group(f
 });
 
 // =======================================================
-// ROUTE MANAGER / ADMIN MASAPAKAI
+// ROUTE MANAGER (Role: manager)
+// [Magfi Adi Radza Putra] - Panel Manager dengan CRUD Tiket
 // =======================================================
-Route::middleware(['auth', 'role:manager,admin_maskapai'])
+Route::middleware(['auth', 'role:manager'])
     ->prefix('manager')
     ->name('manager.')
     ->group(function () {
@@ -72,35 +76,45 @@ Route::middleware(['auth', 'role:manager,admin_maskapai'])
         Route::get('/payments', [ManagerController::class, 'paymentsIndex'])->name('payments.index');
         Route::put('/payments/{id}/confirm', [ManagerController::class, 'confirmPayment'])->name('payments.confirm');
         Route::get('/users', [ManagerController::class, 'usersIndex'])->name('users.index');
-    }); 
+        
+        // CRUD Tiket (TixGo Tickets)
+        Route::get('/tickets', [TicketController::class, 'index'])->name('tickets.index');
+        Route::get('/tickets/create', [TicketController::class, 'create'])->name('tickets.create');
+        Route::post('/tickets', [TicketController::class, 'store'])->name('tickets.store');
+        Route::get('/tickets/{id}/edit', [TicketController::class, 'edit'])->name('tickets.edit');
+        Route::put('/tickets/{id}', [TicketController::class, 'update'])->name('tickets.update');
+        Route::delete('/tickets/{id}', [TicketController::class, 'destroy'])->name('tickets.destroy');
+    });
 
 // =======================================================
-// ROUTE SUPER ADMIN ✅ DIPERBAIKI (TAMBAH role:super_admin,admin)
+// ROUTE SUPER ADMIN (Role: super_admin)
+// [Magfi Adi Radza Putra] - Panel Super Admin
 // =======================================================
-Route::middleware(['auth', 'role:super_admin,admin'])  // ✅ TAMBAHKAN INI!
+Route::middleware(['auth', 'role:super_admin'])
     ->prefix('superadmin')
     ->name('superadmin.')
     ->group(function () {
-
-        Route::get('/dashboard', function () {
-            return '<h1 style="color:blue; font-size:48px;">👑 SUPER ADMIN DASHBOARD</h1><p>Route Super Admin BERHASIL!</p>';
-        })->name('dashboard');
-
-        Route::get('/users', function () {
-            return '<h1 style="color:blue;">👥 DAFTAR USER</h1><p>Halaman users Super Admin</p>';
-        })->name('users');
-
-        Route::get('/payments', function () {
-            return '<h1 style="color:blue;">💳 PEMBAYARAN</h1><p>Halaman payments Super Admin</p>';
-        })->name('payments');
-
-        Route::get('/flights', function () {
-            return '<h1 style="color:blue;">✈️ PENERBANGAN</h1><p>Halaman flights Super Admin</p>';
-        })->name('flights');
-
-        Route::get('/reports', function () {
-            return '<h1 style="color:blue;">📊 LAPORAN</h1><p>Halaman reports Super Admin</p>';
-        })->name('reports');
+        Route::get('/dashboard', [SuperAdminController::class, 'dashboard'])->name('dashboard');
+        
+        // Kelola Users
+        Route::get('/users', [SuperAdminController::class, 'users'])->name('users.index');
+        Route::get('/users/{id}/edit', [SuperAdminController::class, 'edit'])->name('users.edit');
+        Route::put('/users/{id}', [SuperAdminController::class, 'update'])->name('users.update');
+        Route::delete('/users/{id}', [SuperAdminController::class, 'destroy'])->name('users.destroy');
+        Route::put('/users/{id}/role', [SuperAdminController::class, 'updateRole'])->name('users.updateRole');
+        
+        // Kelola Flights & Payments
+        Route::get('/flights', [SuperAdminController::class, 'flights'])->name('flights.index');
+        Route::get('/payments', [SuperAdminController::class, 'payments'])->name('payments.index');
+        Route::get('/reports', [SuperAdminController::class, 'reports'])->name('reports.index');
+        
+        // CRUD Tiket (SuperAdmin juga bisa)
+        Route::get('/tickets', [TicketController::class, 'index'])->name('tickets.index');
+        Route::get('/tickets/create', [TicketController::class, 'create'])->name('tickets.create');
+        Route::post('/tickets', [TicketController::class, 'store'])->name('tickets.store');
+        Route::get('/tickets/{id}/edit', [TicketController::class, 'edit'])->name('tickets.edit');
+        Route::put('/tickets/{id}', [TicketController::class, 'update'])->name('tickets.update');
+        Route::delete('/tickets/{id}', [TicketController::class, 'destroy'])->name('tickets.destroy');
     });
 
 // =======================================================
@@ -110,8 +124,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    
-    // Download Ticket
     Route::get('/download-ticket/{code}', [TicketPrintController::class, 'download'])->name('ticket.download');
 });
 
@@ -123,27 +135,15 @@ Route::get('/flights/{id}', [FlightController::class, 'show'])->name('flights.sh
 Route::get('/flight/search', [FlightController::class, 'search'])->name('flight.search');
 
 // =======================================================
-// ROUTE PUBLIK - HOTEL
+// ROUTE PUBLIK - HOTEL, VILLA, KERETA, BUS
 // =======================================================
 Route::get('/hotels', [HotelController::class, 'index'])->name('hotels.index');
 Route::get('/hotels/search', [HotelController::class, 'search'])->name('hotels.search');
-
-// =======================================================
-// ROUTE PUBLIK - VILLA
-// =======================================================
 Route::get('/villas', [VillaController::class, 'index'])->name('villas.index');
 Route::get('/villas/search', [VillaController::class, 'search'])->name('villas.search');
-
-// =======================================================
-// ROUTE PUBLIK - KERETA
-// =======================================================
 Route::get('/trains', [TrainController::class, 'index'])->name('trains.index');
 Route::get('/trains/{id}', [TrainController::class, 'show'])->name('trains.show');
 Route::get('/trains/search', [TrainController::class, 'search'])->name('trains.search');
-
-// =======================================================
-// ROUTE PUBLIK - BUS
-// =======================================================
 Route::get('/buses', [BusController::class, 'index'])->name('buses.index');
 Route::get('/buses/search', [BusController::class, 'search'])->name('buses.search');
 
@@ -151,32 +151,12 @@ Route::get('/buses/search', [BusController::class, 'search'])->name('buses.searc
 // ROUTE BOOKING (AUTH REQUIRED)
 // =======================================================
 Route::middleware(['auth'])->group(function () {
-    // Booking Pesawat
     Route::get('/bookings/create/{flightId}', [BookingController::class, 'create'])->name('bookings.create');
     Route::post('/bookings/store/{flightId}', [BookingController::class, 'store'])->name('bookings.store');
     Route::get('/bookings/checkout/{bookingId}', [BookingController::class, 'checkout'])->name('bookings.checkout');
     Route::post('/bookings/pay', [BookingController::class, 'pay'])->name('bookings.pay');
     Route::get('/bookings/success/{bookingId}', [BookingController::class, 'success'])->name('bookings.success');
     Route::get('/bookings/download/{bookingId}', [BookingController::class, 'downloadTicket'])->name('bookings.download');
-    
-    // Booking Kereta
-    Route::get('/bookings/create/train', function() { 
-        return view('bookings.create'); 
-    })->name('bookings.create.train');
+    Route::get('/bookings/create/train', function() { return view('bookings.create'); })->name('bookings.create.train');
     Route::post('/bookings/store/train', [BookingController::class, 'storeTrain'])->name('bookings.store.train');
-});
-
-// =======================================================
-// ROUTE LAPORAN (untuk Manager & Super Admin)
-// =======================================================
-Route::middleware(['auth', 'role:manager,admin_maskapai'])->group(function () {
-    Route::get('/manager/reports', function() { 
-        return view('manager.reports'); 
-    })->name('manager.reports');
-});
-
-Route::middleware(['auth', 'role:super_admin,admin'])->group(function () {
-    Route::get('/superadmin/reports', function() { 
-        return view('superadmin.reports'); 
-    })->name('superadmin.reports');
 });

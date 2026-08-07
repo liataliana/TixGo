@@ -1,4 +1,5 @@
 <?php
+// [Magfi Adi Radza Putra] - User Model
 
 namespace App\Models;
 
@@ -12,8 +13,8 @@ class User extends Authenticatable
 
     // Konstanta Role
     const ROLE_USER        = 'user';
-    const ROLE_MANAGER     = 'admin_maskapai';
-    const ROLE_SUPER_ADMIN = 'admin';
+    const ROLE_MANAGER     = 'manager';
+    const ROLE_SUPER_ADMIN = 'super_admin';
 
     protected $fillable = [
         'name',
@@ -44,6 +45,16 @@ class User extends Authenticatable
     public function payments()
     {
         return $this->hasManyThrough(Payment::class, Booking::class);
+    }
+
+    public function carts()
+    {
+        return $this->hasMany(Cart::class);
+    }
+
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class);
     }
 
     // ========== HELPER ROLE ==========

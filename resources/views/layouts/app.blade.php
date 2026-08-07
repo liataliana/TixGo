@@ -421,7 +421,7 @@
 </head>
 <body>
 
-@if(auth()->check() && (auth()->user()->role == 'admin_maskapai' || auth()->user()->role == 'admin'))
+@if(auth()->check() && (auth()->user()->role == 'super_admin' || auth()->user()->role == 'manager'))
     <div x-data="{ sidebarOpen: window.innerWidth >= 1024 }"
          x-init="window.addEventListener('resize', () => { if (window.innerWidth >= 1024) sidebarOpen = true; else sidebarOpen = false; })"
          class="relative min-h-screen">
@@ -430,7 +430,7 @@
         <aside class="sidebar" :class="{ 'open': sidebarOpen }">
             <div class="sidebar-header">
                 <div class="sidebar-brand">
-                    <i class="fa-solid fa-plane-departure"></i>
+                    <i class="fa-solid fa-ticket" style="transform: rotate(12deg);"></i>
                     <span>TixGo</span>
                 </div>
                 <button @click="sidebarOpen = !sidebarOpen" class="sidebar-toggle">
@@ -439,7 +439,28 @@
             </div>
 
             <nav class="sidebar-nav">
-                @if(auth()->user()->role == 'admin_maskapai')
+                @if(auth()->user()->role == 'super_admin')
+                    {{-- SIDEBAR SUPER ADMIN --}}
+                    <a href="{{ route('superadmin.dashboard') }}" class="sidebar-link {{ request()->routeIs('superadmin.dashboard') ? 'active' : '' }}">
+                        <i class="fa-solid fa-chart-pie"></i> Dashboard
+                    </a>
+                    <a href="{{ route('superadmin.users.index') }}" class="sidebar-link {{ request()->routeIs('superadmin.users.*') ? 'active' : '' }}">
+                        <i class="fa-solid fa-users"></i> Kelola Users
+                    </a>
+                    <a href="{{ route('superadmin.flights.index') }}" class="sidebar-link {{ request()->routeIs('superadmin.flights.*') ? 'active' : '' }}">
+                        <i class="fa-solid fa-plane"></i> Penerbangan
+                    </a>
+                    <a href="{{ route('superadmin.payments.index') }}" class="sidebar-link {{ request()->routeIs('superadmin.payments.*') ? 'active' : '' }}">
+                        <i class="fa-solid fa-credit-card"></i> Pembayaran
+                    </a>
+                    <a href="{{ route('superadmin.tickets.index') }}" class="sidebar-link {{ request()->routeIs('superadmin.tickets.*') ? 'active' : '' }}">
+                        <i class="fa-solid fa-ticket"></i> Kelola Tiket
+                    </a>
+                    <a href="{{ route('superadmin.reports.index') }}" class="sidebar-link {{ request()->routeIs('superadmin.reports.*') ? 'active' : '' }}">
+                        <i class="fa-solid fa-chart-bar"></i> Laporan
+                    </a>
+                @elseif(auth()->user()->role == 'manager')
+                    {{-- SIDEBAR MANAGER --}}
                     <a href="{{ route('manager.dashboard') }}" class="sidebar-link {{ request()->routeIs('manager.dashboard') ? 'active' : '' }}">
                         <i class="fa-solid fa-chart-pie"></i> Dashboard
                     </a>
@@ -452,14 +473,19 @@
                     <a href="{{ route('manager.users.index') }}" class="sidebar-link {{ request()->routeIs('manager.users.*') ? 'active' : '' }}">
                         <i class="fa-solid fa-users"></i> Daftar User
                     </a>
+                    <a href="{{ route('manager.tickets.index') }}" class="sidebar-link {{ request()->routeIs('manager.tickets.*') ? 'active' : '' }}">
+                        <i class="fa-solid fa-ticket"></i> Kelola Tiket
+                    </a>
                 @endif
 
                 <div class="sidebar-divider"></div>
 
-                <!-- ===== LOGOUT PAKAI /force-logout (Langsung, Tanpa CSRF) ===== -->
-                <a href="/force-logout" class="sidebar-link logout w-full text-left">
-                    <i class="fa-solid fa-right-from-bracket"></i> Log Out
-                </a>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="sidebar-link logout w-full text-left">
+                        <i class="fa-solid fa-right-from-bracket"></i> Log Out
+                    </button>
+                </form>
             </nav>
         </aside>
 
@@ -474,7 +500,9 @@
                     <button @click="sidebarOpen = !sidebarOpen" class="top-nav-toggle">
                         <i class="fa-solid fa-bars"></i>
                     </button>
-                    <span class="top-nav-title">Area Kerja</span>
+                    <span class="top-nav-title">
+                        {{ auth()->user()->role == 'super_admin' ? '👑 Super Admin Panel' : '📊 Manager Panel' }}
+                    </span>
                 </div>
 
                 <div class="top-nav-right">
@@ -489,18 +517,48 @@
 
             <!-- PAGE CONTENT -->
             <div class="page-content">
+                @if(session('success'))
+                    <div class="mb-4 p-4 bg-green-100 border border-green-300 text-green-800 rounded-xl text-sm font-semibold">
+                        <i class="fa-solid fa-check-circle mr-1"></i> {{ session('success') }}
+                    </div>
+                @endif
+                @if(session('error'))
+                    <div class="mb-4 p-4 bg-red-100 border border-red-300 text-red-800 rounded-xl text-sm font-semibold">
+                        <i class="fa-solid fa-exclamation-circle mr-1"></i> {{ session('error') }}
+                    </div>
+                @endif
                 @yield('content')
             </div>
+
+            <!-- FOOTER -->
+            <footer class="text-center py-4 text-xs text-gray-400 border-t border-gray-200 bg-white">
+                © 2026 TixGo E-Ticketing System — By <strong>Magfi Adi Radza Putra</strong>. All rights reserved.
+            </footer>
         </main>
     </div>
 
 @else
-    <!-- LAYOUT UNTUK USER BIASA (tanpa sidebar) -->
-    <div class="min-h-screen bg-gray-50">
-        @include('layouts.navigation')
-        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <!-- LAYOUT UNTUK USER BIASA & GUEST (tanpa sidebar) -->
+    <div class="min-h-screen bg-gray-50 flex flex-col">
+        @auth
+            @include('layouts.navigation')
+        @endauth
+        <main class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full">
+            @if(session('success'))
+                <div class="mb-4 p-4 bg-green-100 border border-green-300 text-green-800 rounded-xl text-sm font-semibold">
+                    <i class="fa-solid fa-check-circle mr-1"></i> {{ session('success') }}
+                </div>
+            @endif
+            @if(session('error'))
+                <div class="mb-4 p-4 bg-red-100 border border-red-300 text-red-800 rounded-xl text-sm font-semibold">
+                    <i class="fa-solid fa-exclamation-circle mr-1"></i> {{ session('error') }}
+                </div>
+            @endif
             @yield('content')
         </main>
+        <footer class="text-center py-4 text-xs text-gray-400 border-t border-gray-200 bg-white">
+            © 2026 TixGo E-Ticketing System — By <strong>Magfi Adi Radza Putra</strong>. All rights reserved.
+        </footer>
     </div>
 @endif
 
