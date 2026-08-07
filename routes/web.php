@@ -72,7 +72,7 @@ Route::middleware(['auth', 'role:manager,admin_maskapai'])
         Route::get('/payments', [ManagerController::class, 'paymentsIndex'])->name('payments.index');
         Route::put('/payments/{id}/confirm', [ManagerController::class, 'confirmPayment'])->name('payments.confirm');
         Route::get('/users', [ManagerController::class, 'usersIndex'])->name('users.index');
-    });
+    }); 
 
 // =======================================================
 // ROUTE SUPER ADMIN ✅ DIPERBAIKI (TAMBAH role:super_admin,admin)

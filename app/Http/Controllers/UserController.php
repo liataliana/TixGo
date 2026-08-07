@@ -38,4 +38,4 @@ class UserController extends Controller
         // ... kode upload payment ...
         return redirect()->route('user.dashboard')->with('success', 'Bukti pembayaran berhasil diupload. Tunggu konfirmasi dari Manager!');
     }
-}
+} // ✅ TUTUP CLASS HANYA 1 KALI DI SINI!
