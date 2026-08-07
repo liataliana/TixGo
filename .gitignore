@@ -1,5 +1,4 @@
-# ilangin (#) di bawah baris ini (yang ada .env nya)
-# .env
+.env
 *.log
 .DS_Store
 .env.backup
