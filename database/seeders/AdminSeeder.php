@@ -1,4 +1,5 @@
 <?php
+// [Magfi Adi Radza Putra] - Admin Seeder
 
 namespace Database\Seeders;
 
@@ -15,8 +16,7 @@ class AdminSeeder extends Seeder
             [
                 'name' => 'Super Admin',
                 'password' => Hash::make('admin123'),
-                'role' => 'admin',
-                'airline_id' => null,
+                'role' => 'super_admin',
             ]
         );
     }
