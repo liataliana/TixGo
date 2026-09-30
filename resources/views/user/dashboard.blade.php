@@ -24,34 +24,16 @@
                     <a href="{{ route('user.dashboard') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-semibold text-sm {{ request()->routeIs('user.dashboard') ? 'bg-primary text-white' : 'text-gray-600 hover:bg-gray-100' }}">
                         <i class="fa-regular fa-user w-5"></i> Profil Saya
                     </a>
-                    <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-semibold text-sm text-gray-600 hover:bg-gray-100">
-                        <i class="fa-regular fa-heart w-5"></i> Wishlist
-                    </a>
-                    <a href="{{ route('user.orders') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-semibold text-sm text-gray-600 hover:bg-gray-100">
+                    <a href="{{ route('user.orders') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-semibold text-sm {{ request()->routeIs('user.orders') ? 'bg-primary text-white' : 'text-gray-600 hover:bg-gray-100' }}">
                         <i class="fa-regular fa-receipt w-5"></i> Pesanan Saya
                     </a>
-                    <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-semibold text-sm text-gray-600 hover:bg-gray-100">
-                        <i class="fa-regular fa-user w-5"></i> Data Penumpang
-                    </a>
-                    <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-semibold text-sm text-gray-600 hover:bg-gray-100">
-                        <i class="fa-regular fa-ticket w-5"></i> Voucher Box
-                    </a>
-                    <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-semibold text-sm text-gray-600 hover:bg-gray-100">
-                        <i class="fa-regular fa-credit-card w-5"></i> Metode Pembayaran
-                    </a>
-                    <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-semibold text-sm text-gray-600 hover:bg-gray-100">
-                        <i class="fa-regular fa-clock w-5"></i> Daftar Refund
-                    </a>
-                    <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-semibold text-sm text-gray-600 hover:bg-gray-100">
-                        <i class="fa-regular fa-star w-5"></i> My Review
-                    </a>
-                    <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-semibold text-sm text-gray-600 hover:bg-gray-100">
-                        <i class="fa-regular fa-gear w-5"></i> Pengaturan
-                    </a>
                     <div class="border-t border-gray-200 my-2"></div>
-                    <a href="/force-logout" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-semibold text-sm text-red-500 hover:bg-red-50">
-                        <i class="fa-regular fa-right-from-bracket w-5"></i> Keluar
-                    </a>
+                    <form method="POST" action="{{ route('logout') }}" class="m-0">
+                        @csrf
+                        <button type="submit" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg font-semibold text-sm text-red-500 hover:bg-red-50 text-left">
+                            <i class="fa-solid fa-right-from-bracket w-5"></i> Keluar
+                        </button>
+                    </form>
                 </nav>
             </div>
         </div>
