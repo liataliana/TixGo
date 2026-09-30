@@ -396,15 +396,17 @@ TixGo---E-Ticketing-System/
 │       ├── Booking.php         ← Model booking + relasi user(), flight(), payment()
 │       ├── Payment.php         ← Model pembayaran + relasi booking()
 │       ├── Category.php        ← Model kategori tiket
-│       └── TixgoTicket.php     ← Model tiket TixGo
+│       ├── TixgoTicket.php     ← Model tiket TixGo
+│       └── ActivityLog.php     ← Model log aktivitas manager/admin [BARU]
 │
 ├── database/
-│   └── migrations/             ← 25 file migrasi (DDL + constraints)
+│   └── migrations/             ← 26 file migrasi (DDL + constraints)
 │       ├── create_flights_table        ← Tabel penerbangan
 │       ├── create_bookings_table       ← Tabel booking (FK ke users, flights)
 │       ├── create_payments_table       ← Tabel pembayaran (FK ke bookings)
 │       ├── create_categories_table     ← Tabel kategori
-│       ├── create_tixgo_tickets_table  ← Tabel tiket (FK ke categories + CHECK constraint)
+│       ├── create_tixgo_tickets_table  ← Tabel tiket (FK ke categories)
+│       ├── create_activity_logs_table  ← Tabel log aktivitas [BARU]
 │       └── ... (lihat tabel constraints di atas)
 │
 ├── resources/views/            ← Semua halaman tampilan
@@ -414,7 +416,11 @@ TixGo---E-Ticketing-System/
 │   ├── home.blade.php          ← Landing page (5 kategori card 3D)
 │   ├── user/                   ← Halaman khusus role User
 │   ├── manager/                ← Halaman khusus role Manager
+│   │   └── tickets/index.blade.php  ← Tab filter: Hotel/Villa/Bus/Kereta
 │   ├── superadmin/             ← Halaman khusus role Super Admin
+│   │   ├── create-manager.blade.php ← Form tambah akun manager [BARU]
+│   │   ├── activity-log.blade.php   ← Log aktivitas manager [BARU]
+│   │   └── tickets/index.blade.php  ← Tab filter: Hotel/Villa/Bus/Kereta
 │   ├── flights/                ← Halaman penerbangan (publik)
 │   ├── hotels/, villas/, trains/, buses/  ← Halaman kategori lain
 │   └── bookings/               ← Alur booking (create → checkout → success → eticket)
@@ -429,17 +435,116 @@ TixGo---E-Ticketing-System/
 
 ---
 
+## 🗄️ Panduan Export & Import Database (SQL)
+
+> Bagian ini untuk teman tim agar bisa menyambungkan database dengan project ini.
+
+### 📤 Export Database (dari komputer kamu)
+
+#### Cara 1: Via phpMyAdmin (mudah)
+1. Buka `http://localhost/phpmyadmin`
+2. Pilih database **TixGo** di sidebar kiri
+3. Klik tab **Export**
+4. Format: **SQL** → centang "Add DROP TABLE"
+5. Klik **Go** → file `.sql` akan ter-download
+6. Kirim file `.sql` ke teman (via Google Drive, WhatsApp, dll)
+
+#### Cara 2: Via Command Line (lebih cepat)
+```bash
+# Export seluruh database
+mysqldump -u root -p TixGo > TixGo_backup.sql
+
+# Atau tanpa password (Laragon default):
+mysqldump -u root TixGo > TixGo_backup.sql
+```
+
+---
+
+### 📥 Import Database (di komputer teman)
+
+#### Cara 1: Via phpMyAdmin
+1. Buka `http://localhost/phpmyadmin`
+2. Buat database baru bernama **TixGo** (klik "New" di sidebar)
+3. Klik database **TixGo** → tab **Import**
+4. Pilih file `.sql` yang diterima → klik **Go**
+5. Selesai! Semua tabel + data sudah masuk.
+
+#### Cara 2: Via Command Line
+```bash
+# Buat database dulu
+mysql -u root -e "CREATE DATABASE TixGo CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+
+# Import file SQL
+mysql -u root TixGo < TixGo_backup.sql
+```
+
+#### Cara 3: Via Laravel Migration (tanpa file SQL)
+```bash
+# Clone project terlebih dahulu, lalu:
+php artisan migrate
+php artisan db:seed   # (jika ada seeder)
+```
+
+---
+
+### 🗂️ Tabel Database & Constraints
+
+| Tabel | Constraint Utama | Migration File |
+|-------|-----------------|----------------|
+| `users` | PK: id, UNIQUE: email, ENUM: role | `create_users_table` |
+| `flights` | PK: id, NOT NULL: origin, destination, price | `create_flights_table` |
+| `bookings` | PK: id, FK: user_id→users, FK: flight_id→flights (SET NULL), UNIQUE: booking_code | `create_bookings_table` |
+| `payments` | PK: id, FK: booking_id→bookings (CASCADE), ENUM: status | `create_payments_table` |
+| `categories` | PK: id, UNIQUE: name | `create_categories_table` |
+| `tixgo_tickets` | PK: id, FK: category_id→categories (CASCADE), UNIQUE: ticket_code | `create_tixgo_tickets_table` |
+| **`activity_logs`** | PK: id, FK: user_id→users (CASCADE) | `2026_09_30_200000_create_activity_logs_table` |
+
+### Penjelasan Relasi (ERD Sederhana)
+```
+users ──< bookings >── flights
+           │
+           └──< payments
+
+categories ──< tixgo_tickets
+
+users ──< activity_logs
+```
+
+---
+
+## 👥 Role & Tugas Masing-Masing
+
+| Fitur | 👤 User | 👔 Manager | 🛡️ Super Admin |
+|-------|---------|-----------|----------------|
+| Cari & Pesan Tiket (5 kategori) | ✅ | ❌ | ❌ |
+| Checkout & Bayar | ✅ | ❌ | ❌ |
+| Lihat Pesanan & E-Ticket | ✅ | ❌ | ❌ |
+| Konfirmasi Pembayaran | ❌ | ✅ | ❌ |
+| Tambah Jadwal Penerbangan | ❌ | ✅ | ❌ |
+| Kelola Tiket (per kategori) | ❌ | ✅ | ✅ |
+| Lihat Daftar Member (role=user saja) | ❌ | ✅ | ❌ |
+| Lihat SEMUA User (semua role) | ❌ | ❌ | ✅ |
+| Tambah Akun Manager / Admin | ❌ | ❌ | ✅ |
+| Ubah Role User | ❌ | ❌ | ✅ |
+| Hapus User | ❌ | ❌ | ✅ |
+| Log Aktivitas Manager | ❌ | ❌ | ✅ |
+| Pantau Pembayaran (semua) | ❌ | ❌ | ✅ |
+| Laporan & Statistik | ❌ | ❌ | ✅ |
+
+---
+
 ## ⚠️ Troubleshooting Umum
 
 | Error | Penyebab | Solusi |
 |-------|----------|--------|
 | `500 Server Error` | APP_KEY belum ada | `php artisan key:generate` |
 | `Table doesn't exist` | Migrasi belum dijalankan | `php artisan migrate` |
-| `Database 'laravel' not found` | DB_DATABASE di .env salah | Ubah jadi `DB_DATABASE=TixGo` dan **uncomment** |
+| `Database 'laravel' not found` | DB_DATABASE di .env salah | Ubah jadi `DB_DATABASE=TixGo` |
 | `419 Page Expired` | CSRF token expired | Refresh halaman (F5) |
 | `Class not found` | Autoload belum update | `composer dump-autoload` |
 | `View not found` | Cache lama | `php artisan optimize:clear` |
-| `Column not found` | Kolom salah di code | Jalankan `php artisan migrate:fresh` (⚠️ HAPUS DATA!) |
+| `Column not found` | Kolom salah di code | Jalankan `php artisan migrate` |
+| `activity_logs table not found` | Migration baru belum jalan | `php artisan migrate` |
 
 ---
 

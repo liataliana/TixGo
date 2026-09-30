@@ -95,19 +95,26 @@ Route::middleware(['auth', 'role:super_admin'])
     ->name('superadmin.')
     ->group(function () {
         Route::get('/dashboard', [SuperAdminController::class, 'dashboard'])->name('dashboard');
-        
-        // Kelola Users
+
+        // Kelola Users (Super Admin lihat SEMUA role)
         Route::get('/users', [SuperAdminController::class, 'users'])->name('users.index');
         Route::get('/users/{id}/edit', [SuperAdminController::class, 'edit'])->name('users.edit');
         Route::put('/users/{id}', [SuperAdminController::class, 'update'])->name('users.update');
         Route::delete('/users/{id}', [SuperAdminController::class, 'destroy'])->name('users.destroy');
         Route::put('/users/{id}/role', [SuperAdminController::class, 'updateRole'])->name('users.updateRole');
-        
+
+        // Tambah Akun Manager (atau role lain)
+        Route::get('/managers/create', [SuperAdminController::class, 'createManager'])->name('managers.create');
+        Route::post('/managers', [SuperAdminController::class, 'storeManager'])->name('managers.store');
+
+        // Activity Log — pantau aksi manager
+        Route::get('/activity-log', [SuperAdminController::class, 'activityLog'])->name('activity-log');
+
         // Kelola Flights & Payments
         Route::get('/flights', [SuperAdminController::class, 'flights'])->name('flights.index');
         Route::get('/payments', [SuperAdminController::class, 'payments'])->name('payments.index');
         Route::get('/reports', [SuperAdminController::class, 'reports'])->name('reports.index');
-        
+
         // CRUD Tiket (SuperAdmin juga bisa)
         Route::get('/tickets', [TicketController::class, 'index'])->name('tickets.index');
         Route::get('/tickets/create', [TicketController::class, 'create'])->name('tickets.create');
