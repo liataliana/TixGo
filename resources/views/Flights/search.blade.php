@@ -43,9 +43,8 @@
 <div class="result-wrapper">
     <!-- Header Rute -->
     <div class="result-header">
-        <div><strong>Jakarta (CGK)</strong> → <strong>Makassar (UPG)</strong></div>
-        <div>Sel, 04 Agu 2026 - Rab, 05 Agu 2026 (Pulang Pergi)</div>
-        <div>4 Penumpang, Ekonomi</div>
+        <div><strong>{{ request('origin') ?? 'Semua' }}</strong> → <strong>{{ request('destination') ?? 'Semua' }}</strong></div>
+        <div>{{ request('departure_date') ? \Carbon\Carbon::parse(request('departure_date'))->format('D, d M Y') : 'Semua Tanggal' }}</div>
     </div>
 
     <!-- Filter Bar -->
@@ -53,80 +52,47 @@
         <button class="filter-btn"><i class="fa-solid fa-sliders"></i> Filter</button>
         <button class="filter-btn">Urutkan <i class="fa-solid fa-chevron-down"></i></button>
         <button class="filter-btn">Transit <i class="fa-solid fa-chevron-down"></i></button>
-        <button class="filter-btn" onclick="toggleFilterMenu('maskapai')">Maskapai <i class="fa-solid fa-chevron-down"></i></button>
-        <button class="filter-btn" onclick="toggleFilterMenu('waktu')">Waktu <i class="fa-solid fa-chevron-down"></i></button>
-        <button class="filter-btn">100% Refund</button>
     </div>
 
     <!-- List Penerbangan -->
     <div id="flightList">
-        <!-- Card 1 -->
-        <div class="flight-card">
-            <div class="flight-row">
-                <div class="airline">
-                    <div class="airline-logo">SW</div>
-                    <div>
-                        <div class="airline-name">Sriwijaya Air</div>
-                        <div style="font-size:12px; color:#64748b;">Boeing 737-800</div>
+        @if(isset($flights) && $flights->count() > 0)
+            @foreach($flights as $flight)
+            <div class="flight-card">
+                <div class="flight-row">
+                    <div class="airline">
+                        <div class="airline-logo">{{ substr($flight->airline, 0, 2) }}</div>
+                        <div>
+                            <div class="airline-name">{{ $flight->airline }}</div>
+                            <div style="font-size:12px; color:#64748b;">Flight ID: {{ $flight->id }}</div>
+                        </div>
+                    </div>
+                    <div class="schedule">
+                        <div><div class="time">{{ \Carbon\Carbon::parse($flight->departure_time)->format('H:i') }}</div><div class="airport">{{ $flight->origin }}</div></div>
+                        <div class="duration">
+                            <div>Langsung</div>
+                            <div class="duration-line"></div>
+                        </div>
+                        <div><div class="time">{{ \Carbon\Carbon::parse($flight->arrival_time)->format('H:i') }}</div><div class="airport">{{ $flight->destination }}</div></div>
+                    </div>
+                    <div class="price-box">
+                        <div class="price">Rp {{ number_format($flight->price, 0, ',', '.') }}</div>
+                        <a href="{{ route('bookings.create', $flight->id) }}" class="btn-select block text-center" style="display:block; text-decoration:none;">Pilih</a>
                     </div>
                 </div>
-                <div class="schedule">
-                    <div><div class="time">22:15</div><div class="airport">CGK</div></div>
-                    <div class="duration">
-                        <div>2j 25m</div>
-                        <div class="duration-line"></div>
-                        <div>Langsung</div>
-                    </div>
-                    <div><div class="time">01:40<div style="display:inline-block; font-size:12px; color:#dc2626;">+1</div></div><div class="airport">UPG</div></div>
-                </div>
-                <div class="price-box">
-                    <div class="price">Rp 1.852.197</div>
-                    <div class="sub-price">Rp 1.886.129</div>
-                    <button class="btn-select">Pilih</button>
+                <div class="flight-detail">
+                    <span><i class="fa-solid fa-suitcase"></i> Kapasitas: {{ $flight->capacity }} org</span>
+                    <span><i class="fa-solid fa-chair"></i> Sisa Kursi: {{ $flight->available_seats }}</span>
                 </div>
             </div>
-            <div class="flight-detail">
-                <span><i class="fa-solid fa-suitcase"></i> Bagasi 15 kg</span>
-                <span><i class="fa-solid fa-clock"></i> Last Minute Deal</span>
+            @endforeach
+        @else
+            <div style="text-align:center; padding: 40px; background:#fff; border-radius:12px; border:1px solid #e2e8f0;">
+                <i class="fa-solid fa-plane-slash" style="font-size:40px; color:#cbd5e1; margin-bottom:10px;"></i>
+                <h3 style="margin:0; color:#1e3a5f;">Penerbangan Tidak Ditemukan</h3>
+                <p style="color:#64748b;">Coba ganti rute atau tanggal pencarian.</p>
             </div>
-        </div>
-
-        <!-- Card 2 -->
-        <div class="flight-card">
-            <div class="flight-row">
-                <div class="airline">
-                    <div class="airline-logo">NA</div>
-                    <div>
-                        <div class="airline-name">NAM Air</div>
-                        <div style="font-size:12px; color:#64748b;">Boeing 737-500</div>
-                    </div>
-                </div>
-                <div class="schedule">
-                    <div><div class="time">21:15</div><div class="airport">CGK</div></div>
-                    <div class="duration">
-                        <div>2j 25m</div>
-                        <div class="duration-line"></div>
-                        <div>Langsung</div>
-                    </div>
-                    <div><div class="time">00:40<div style="display:inline-block; font-size:12px; color:#dc2626;">+1</div></div><div class="airport">UPG</div></div>
-                </div>
-                <div class="price-box">
-                    <div class="price">Rp 1.694.668</div>
-                    <div class="sub-price">Rp 1.886.129</div>
-                    <button class="btn-select">Pilih</button>
-                </div>
-            </div>
-            <div class="flight-detail">
-                <span><i class="fa-solid fa-suitcase"></i> Bagasi 15 kg</span>
-            </div>
-        </div>
+        @endif
     </div>
 </div>
-
-<script>
-    // Simple Toggle untuk Filter Maskapai & Waktu (Bisa ditambahkan modal sama seperti search)
-    function toggleFilterMenu(type) {
-        alert('Fitur Filter ' + type + ' akan membuka popup pemilihan. Silakan integrasikan dengan modal sendiri sesuai kebutuhan anda!');
-    }
-</script>
 @endsection
