@@ -106,18 +106,35 @@
                 <a href="{{ route('home') }}" class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}">
                     <i class="fa-regular fa-house mr-1"></i> Home
                 </a>
-                <a href="{{ route('flights.index') }}" class="nav-link {{ request()->routeIs('flights.*') ? 'active' : '' }}">
+                <a href="{{ route('flights.index') }}" class="nav-link {{ request()->routeIs('flights.*') || request()->routeIs('flight.*') ? 'active' : '' }}">
                     <i class="fa-solid fa-plane mr-1"></i> Penerbangan
+                </a>
+                <a href="{{ route('hotels.index') }}" class="nav-link {{ request()->routeIs('hotels.*') ? 'active' : '' }}">
+                    <i class="fa-solid fa-hotel mr-1"></i> Hotel
+                </a>
+                <a href="{{ route('villas.index') }}" class="nav-link {{ request()->routeIs('villas.*') ? 'active' : '' }}">
+                    <i class="fa-solid fa-house-chimney mr-1"></i> Villa
+                </a>
+                <a href="{{ route('trains.index') }}" class="nav-link {{ request()->routeIs('trains.*') ? 'active' : '' }}">
+                    <i class="fa-solid fa-train mr-1"></i> Kereta
+                </a>
+                <a href="{{ route('buses.index') }}" class="nav-link {{ request()->routeIs('buses.*') ? 'active' : '' }}">
+                    <i class="fa-solid fa-bus mr-1"></i> Bus
                 </a>
                 @auth
                     <a href="{{ route('user.dashboard') }}" class="nav-link {{ request()->routeIs('user.dashboard') ? 'active' : '' }}">
                         <i class="fa-regular fa-user mr-1"></i> Dashboard
                     </a>
                     <a href="{{ route('user.orders') }}" class="nav-link {{ request()->routeIs('user.orders') ? 'active' : '' }}">
-                        <i class="fa-regular fa-receipt mr-1"></i> Pesanan Saya
+                        <i class="fa-regular fa-receipt mr-1"></i> Pesanan
                     </a>
                 @endauth
             </div>
+
+            {{-- MOBILE HAMBURGER --}}
+            <button onclick="document.getElementById('mobileMenu').classList.toggle('hidden')" class="md:hidden text-white text-xl p-2">
+                <i class="fa-solid fa-bars"></i>
+            </button>
 
             {{-- AUTH SECTION --}}
             <div class="flex items-center gap-3">
@@ -139,6 +156,24 @@
         </div>
     </div>
 </nav>
+
+{{-- ===================== MOBILE MENU ===================== --}}
+<div id="mobileMenu" class="hidden md:hidden" style="background: linear-gradient(135deg, #0f172a, #1e3a5f); border-bottom: 1px solid rgba(255,255,255,0.1);">
+    <div class="px-4 py-3 space-y-1">
+        <a href="{{ route('home') }}" class="block nav-link py-2 text-white/80 hover:text-white"><i class="fa-regular fa-house mr-2 w-5 text-center"></i> Home</a>
+        <a href="{{ route('flights.index') }}" class="block nav-link py-2 text-white/80 hover:text-white"><i class="fa-solid fa-plane mr-2 w-5 text-center"></i> Penerbangan</a>
+        <a href="{{ route('hotels.index') }}" class="block nav-link py-2 text-white/80 hover:text-white"><i class="fa-solid fa-hotel mr-2 w-5 text-center"></i> Hotel</a>
+        <a href="{{ route('villas.index') }}" class="block nav-link py-2 text-white/80 hover:text-white"><i class="fa-solid fa-house-chimney mr-2 w-5 text-center"></i> Villa</a>
+        <a href="{{ route('trains.index') }}" class="block nav-link py-2 text-white/80 hover:text-white"><i class="fa-solid fa-train mr-2 w-5 text-center"></i> Kereta Api</a>
+        <a href="{{ route('buses.index') }}" class="block nav-link py-2 text-white/80 hover:text-white"><i class="fa-solid fa-bus mr-2 w-5 text-center"></i> Bus & Travel</a>
+        @auth
+            <div style="border-top: 1px solid rgba(255,255,255,0.1); margin-top: 0.5rem; padding-top: 0.5rem;">
+                <a href="{{ route('user.dashboard') }}" class="block nav-link py-2 text-white/80 hover:text-white"><i class="fa-regular fa-user mr-2 w-5 text-center"></i> Dashboard</a>
+                <a href="{{ route('user.orders') }}" class="block nav-link py-2 text-white/80 hover:text-white"><i class="fa-regular fa-receipt mr-2 w-5 text-center"></i> Pesanan Saya</a>
+            </div>
+        @endauth
+    </div>
+</div>
 
 {{-- ===================== CONTENT ===================== --}}
 <div class="page-bg">

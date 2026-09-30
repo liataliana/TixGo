@@ -230,6 +230,11 @@
             <i class="fa-solid fa-leaf"></i> TixGo
         </div>
         <div class="nav-links flex items-center">
+            <a href="{{ route('flights.index') }}">✈️ Penerbangan</a>
+            <a href="{{ route('hotels.index') }}">🏨 Hotel</a>
+            <a href="{{ route('villas.index') }}">🏡 Villa</a>
+            <a href="{{ route('trains.index') }}">🚂 Kereta</a>
+            <a href="{{ route('buses.index') }}">🚌 Bus</a>
             @auth
                 <a href="{{ route('dashboard') }}" class="btn-glass">Dashboard</a>
             @else
