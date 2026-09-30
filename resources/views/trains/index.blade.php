@@ -1,4 +1,5 @@
-@extends('layouts.app')
+@extends('layouts.user')
+@section('title', 'Tiket Kereta Api')
 
 @section('content')
 <style>

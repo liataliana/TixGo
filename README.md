@@ -1,59 +1,215 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🎫 TixGo E-Ticketing System
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+> Sistem pemesanan tiket online multi-transportasi berbasis Laravel.
 
-## About Laravel
+## 📋 Panduan Setup untuk Anggota Tim
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### Prasyarat (Harus Sudah Terinstall)
+| Software | Versi Minimum | Download |
+|----------|---------------|----------|
+| PHP | 8.1+ | [php.net](https://www.php.net/) |
+| Composer | 2.0+ | [getcomposer.org](https://getcomposer.org/) |
+| MySQL | 5.7+ / MariaDB 10+ | Sudah include di Laragon |
+| Node.js | 16+ | [nodejs.org](https://nodejs.org/) |
+| Laragon | Terbaru | [laragon.org](https://laragon.org/) |
+| Git | Terbaru | [git-scm.com](https://git-scm.com/) |
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+---
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### 🚀 Langkah-Langkah Setup (Ikuti BERURUTAN!)
 
-## Learning Laravel
+#### 1. Clone Repository
+```bash
+cd C:\laragon\www
+git clone https://github.com/liataliana/TixGo---E-Ticketing-System.git
+cd TixGo---E-Ticketing-System
+```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+#### 2. Install Dependency PHP (Composer)
+```bash
+composer install
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+#### 3. Install Dependency Frontend (NPM)
+```bash
+npm install
+```
 
-## Laravel Sponsors
+#### 4. Buat File Environment (.env)
+```bash
+copy .env.example .env
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+#### 5. Generate Application Key
+```bash
+php artisan key:generate
+```
 
-### Premium Partners
+#### 6. Konfigurasi Database
+Buka file `.env` dengan text editor (Notepad++ / VS Code), lalu **HILANGKAN tanda `#`** (uncomment) dan ubah bagian database menjadi:
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=TixGo
+DB_USERNAME=root
+DB_PASSWORD=
+```
 
-## Contributing
+> ⚠️ **PENTING:** Pastikan baris-baris di atas **TIDAK** diawali dengan tanda `#` (pagar). Jika ada `#` di depan, hapus `#` nya!
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+#### 7. Buat Database di MySQL
+Buka terminal MySQL (lewat Laragon > Menu > MySQL > Console), lalu:
+```sql
+CREATE DATABASE TixGo;
+```
+Atau buka **phpMyAdmin** (`http://localhost/phpmyadmin`), lalu buat database baru bernama `TixGo`.
 
-## Code of Conduct
+#### 8. Jalankan Migrasi Database
+```bash
+php artisan migrate
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+#### 9. (Opsional) Buat Akun Default untuk Testing
+```bash
+php artisan tinker
+```
+Lalu ketik satu per satu:
+```php
+// Buat Super Admin
+\App\Models\User::create(['name'=>'Super Admin','email'=>'admin@tixgo.com','password'=>bcrypt('password123'),'role'=>'super_admin']);
 
-## Security Vulnerabilities
+// Buat Manager
+\App\Models\User::create(['name'=>'Manager TixGo','email'=>'manager@tixgo.com','password'=>bcrypt('password123'),'role'=>'manager']);
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+// Buat User Biasa
+\App\Models\User::create(['name'=>'User Demo','email'=>'user@tixgo.com','password'=>bcrypt('password123'),'role'=>'user']);
 
-## License
+// Tambah data penerbangan demo
+\App\Models\Flight::create(['airline'=>'Garuda Indonesia','origin'=>'Jakarta','destination'=>'Bali','departure_time'=>'2026-10-15 08:00','arrival_time'=>'2026-10-15 09:30','price'=>1200000,'capacity'=>180,'available_seats'=>45,'status'=>'active']);
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+\App\Models\Flight::create(['airline'=>'Lion Air','origin'=>'Jakarta','destination'=>'Surabaya','departure_time'=>'2026-10-15 10:00','arrival_time'=>'2026-10-15 11:10','price'=>650000,'capacity'=>150,'available_seats'=>80,'status'=>'active']);
+
+exit
+```
+
+#### 10. Jalankan Server
+```bash
+php artisan serve
+```
+Buka browser: **http://127.0.0.1:8000**
+
+---
+
+### 🔑 Akun Login Default (Setelah Langkah 9)
+
+| Role | Email | Password |
+|------|-------|----------|
+| Super Admin | `admin@tixgo.com` | `password123` |
+| Manager | `manager@tixgo.com` | `password123` |
+| User Biasa | `user@tixgo.com` | `password123` |
+
+---
+
+### 📁 Struktur Folder Penting
+
+```
+TixGo---E-Ticketing-System/
+├── app/
+│   ├── Http/Controllers/       ← Semua logika backend (controller)
+│   │   ├── BookingController.php    ← Proses pemesanan & pembayaran
+│   │   ├── FlightController.php     ← Halaman pencarian penerbangan
+│   │   ├── HotelController.php      ← Halaman hotel
+│   │   ├── VillaController.php      ← Halaman villa
+│   │   ├── TrainController.php      ← Halaman kereta api
+│   │   ├── BusController.php        ← Halaman bus & travel
+│   │   ├── ManagerController.php    ← Dashboard Manager (CRUD + verifikasi)
+│   │   ├── SuperAdminController.php ← Dashboard Super Admin
+│   │   ├── UserController.php       ← Dashboard User biasa
+│   │   └── TicketController.php     ← CRUD Tiket Umum
+│   └── Models/                 ← Model database
+│       ├── Booking.php, Flight.php, Payment.php, User.php
+│
+├── database/
+│   └── migrations/             ← File-file migrasi database (25 file)
+│
+├── resources/views/            ← Semua halaman tampilan (Blade)
+│   ├── layouts/
+│   │   ├── app.blade.php       ← Layout admin (Manager & SuperAdmin)
+│   │   └── user.blade.php      ← Layout user (dengan navbar hijau premium)
+│   ├── home.blade.php          ← Landing page (5 kategori card 3D)
+│   ├── flights/                ← Halaman penerbangan (index, search, show)
+│   ├── hotels/                 ← Halaman hotel (index, search)
+│   ├── villas/                 ← Halaman villa (index, search)
+│   ├── trains/                 ← Halaman kereta api (index, show, search)
+│   ├── buses/                  ← Halaman bus (index, search)
+│   ├── bookings/               ← Alur booking (create, checkout, success)
+│   ├── user/                   ← Dashboard user (dashboard, orders)
+│   ├── manager/                ← Dashboard manager
+│   └── superadmin/             ← Dashboard super admin
+│
+├── routes/
+│   └── web.php                 ← Semua definisi URL/route
+│
+├── .env.example                ← Template konfigurasi environment
+└── alur_kerja.md               ← Dokumentasi alur kerja per role
+```
+
+---
+
+### 📊 Daftar Tabel Database (25 Migrasi)
+
+| No | Tabel | Fungsi |
+|----|-------|--------|
+| 1 | `users` | Data pengguna (nama, email, password, **role**) |
+| 2 | `flights` | Jadwal penerbangan (maskapai, rute, harga, kapasitas) |
+| 3 | `bookings` | Data pemesanan tiket (kode booking, penumpang, total harga, status) |
+| 4 | `payments` | Data pembayaran (metode, status, bukti bayar) |
+| 5 | `categories` | Kategori tiket (penerbangan, kereta, bus, dll) |
+| 6 | `tixgo_tickets` | Tiket umum TixGo (CRUD oleh Manager/SuperAdmin) |
+| 7 | `carts` | Keranjang belanja |
+| 8 | `transactions` | Data transaksi |
+| 9 | `transaction_details` | Detail per transaksi |
+| 10 | `payment_methods` | Metode pembayaran tersedia |
+| 11 | `airlines` | Data maskapai |
+| 12 | `airplanes` | Data pesawat |
+| 13 | `airports` | Data bandara |
+| 14 | `flight_prices` | Harga penerbangan per kelas |
+| 15 | `booking_passengers` | Detail penumpang per booking |
+
+---
+
+### 🔄 Alur Kerja Sistem (Ringkasan)
+
+```
+👤 USER BIASA                    👨‍💼 MANAGER                   🛡️ SUPER ADMIN
+━━━━━━━━━━━━━━━                  ━━━━━━━━━━━━━━               ━━━━━━━━━━━━━━━━
+1. Cari tiket                    1. Tambah jadwal             1. Kelola semua akun
+2. Pilih jadwal                  2. Edit/hapus jadwal         2. Ubah role pengguna
+3. Isi data penumpang            3. Verifikasi pembayaran     3. Lihat laporan
+4. Checkout & bayar              4. Kelola data tiket         4. Akses penuh ke semua fitur
+5. Tunggu verifikasi Manager
+6. Download E-Ticket (setelah dikonfirmasi)
+```
+
+---
+
+### ⚠️ Troubleshooting Umum
+
+| Error | Penyebab | Solusi |
+|-------|----------|--------|
+| `500 Server Error` | APP_KEY belum ada | Jalankan `php artisan key:generate` |
+| `Table doesn't exist` | Migrasi belum dijalankan | Jalankan `php artisan migrate` |
+| `Database laravel not found` | DB_DATABASE di .env salah | Ubah menjadi `DB_DATABASE=TixGo` dan **uncomment** baris MySQL |
+| `419 Page Expired` | CSRF token expired | Refresh halaman (F5), lalu coba lagi |
+| `Class not found` | Autoload belum update | Jalankan `composer dump-autoload` |
+
+---
+
+### 🤝 Kontributor
+- **Magfi Adi Radza Putra** (Heikkakeren) — Lead Developer
+
+---
+
+© 2026 TixGo E-Ticketing System

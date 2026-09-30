@@ -142,8 +142,8 @@ Route::get('/hotels/search', [HotelController::class, 'search'])->name('hotels.s
 Route::get('/villas', [VillaController::class, 'index'])->name('villas.index');
 Route::get('/villas/search', [VillaController::class, 'search'])->name('villas.search');
 Route::get('/trains', [TrainController::class, 'index'])->name('trains.index');
-Route::get('/trains/{id}', [TrainController::class, 'show'])->name('trains.show');
 Route::get('/trains/search', [TrainController::class, 'search'])->name('trains.search');
+Route::get('/trains/{id}', [TrainController::class, 'show'])->name('trains.show');
 Route::get('/buses', [BusController::class, 'index'])->name('buses.index');
 Route::get('/buses/search', [BusController::class, 'search'])->name('buses.search');
 

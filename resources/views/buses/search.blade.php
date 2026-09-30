@@ -1,4 +1,5 @@
-@extends('layouts.app')
+@extends('layouts.user')
+@section('title', 'Hasil Pencarian Bus')
 
 @section('content')
 <style>
