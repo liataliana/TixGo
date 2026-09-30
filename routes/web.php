@@ -151,14 +151,17 @@ Route::get('/buses/search', [BusController::class, 'search'])->name('buses.searc
 // ROUTE BOOKING (AUTH REQUIRED)
 // =======================================================
 Route::middleware(['auth'])->group(function () {
+    // Generic booking routes MUST come before {flightId} wildcard
+    Route::get('/bookings/create/generic', [BookingController::class, 'createGeneric'])->name('bookings.create.generic');
+    Route::get('/bookings/create/train', [BookingController::class, 'createGeneric'])->name('bookings.create.train');
+    Route::post('/bookings/store/generic', [BookingController::class, 'storeGeneric'])->name('bookings.store.generic');
+
+    // Flight-specific booking (wildcard must be LAST)
     Route::get('/bookings/create/{flightId}', [BookingController::class, 'create'])->name('bookings.create');
     Route::post('/bookings/store/{flightId}', [BookingController::class, 'store'])->name('bookings.store');
+
     Route::get('/bookings/checkout/{bookingId}', [BookingController::class, 'checkout'])->name('bookings.checkout');
     Route::post('/bookings/pay', [BookingController::class, 'pay'])->name('bookings.pay');
     Route::get('/bookings/success/{bookingId}', [BookingController::class, 'success'])->name('bookings.success');
     Route::get('/bookings/download/{bookingId}', [BookingController::class, 'downloadTicket'])->name('bookings.download');
-    Route::get('/bookings/create/generic', [BookingController::class, 'createGeneric'])->name('bookings.create.generic');
-    Route::post('/bookings/store/generic', [BookingController::class, 'storeGeneric'])->name('bookings.store.generic');
-    // Keep old route name working as alias
-    Route::get('/bookings/create/train', [BookingController::class, 'createGeneric'])->name('bookings.create.train');
 });
