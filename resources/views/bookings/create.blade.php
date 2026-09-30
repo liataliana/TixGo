@@ -134,7 +134,11 @@
             </div>
         @endif
 
-        <form action="{{ route('bookings.store.train') }}" method="POST">
+        @if(isset($flightId))
+            <form action="{{ route('bookings.store', $flightId) }}" method="POST">
+        @else
+            <form action="{{ route('bookings.store.train') }}" method="POST">
+        @endif
             @csrf
 
             <div class="form-row">

@@ -68,14 +68,20 @@ class BookingController extends Controller
             // Contoh: Jika di database kolomnya 'full_name', tulis 'full_name'.
             $dataToSave = [
                 'user_id'    => Auth::id(),
+                'booking_code' => 'TIX-' . strtoupper(\Illuminate\Support\Str::random(6)),
                 'category'   => 'train',
-                'nama_penumpang' => $request->passenger_name,  // GANTI 'nama_penumpang' jadi nama kolom DB kamu
-                'nomor_ktp'      => $request->id_number,       // GANTI 'nomor_ktp' jadi nama kolom DB kamu
+                'nama_penumpang' => $request->passenger_name,
+                'passenger_name' => $request->passenger_name,
+                'nomor_ktp'      => $request->id_number,
                 'email'          => $request->email,
-                'no_telp'        => $request->phone,           // GANTI 'no_telp' jadi nama kolom DB kamu
-                'jumlah_penumpang'=> $request->passenger_count, // GANTI 'jumlah_penumpang' jadi nama kolom DB kamu
+                'passenger_email'=> $request->email,
+                'no_telp'        => $request->phone,
+                'passenger_phone'=> $request->phone,
+                'jumlah_penumpang'=> $request->passenger_count,
+                'passenger_count'=> $request->passenger_count,
                 'total_price'    => 370000 * $request->passenger_count,
                 'status'         => 'pending',
+                'payment_status' => 'pending',
             ];
             
             // 3. Simpan ke Database
