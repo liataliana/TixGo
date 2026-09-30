@@ -48,8 +48,19 @@ class BookingController extends Controller
                          ->with('success', 'Data penumpang berhasil disimpan!');
     }
 
-    // Store train booking
-    public function storeTrain(Request $request)
+    // Show generic booking form for hotel/villa/train/bus
+    public function createGeneric(Request $request)
+    {
+        $category  = $request->query('category', 'train');
+        $itemName  = $request->query('name', 'Tiket Perjalanan');
+        $itemRoute = $request->query('route', '-');
+        $itemPrice = $request->query('price', 0);
+
+        return view('bookings.create-generic', compact('category', 'itemName', 'itemRoute', 'itemPrice'));
+    }
+
+    // Store generic booking (hotel/villa/train/bus)
+    public function storeGeneric(Request $request)
     {
         $request->validate([
             'passenger_name'  => 'required|string|max:255',
@@ -57,24 +68,26 @@ class BookingController extends Controller
             'email'           => 'required|email|max:255',
             'phone'           => 'required|string|max:20',
             'passenger_count' => 'required|integer|min:1',
+            'category'        => 'required|string',
+            'item_price'      => 'required|numeric|min:0',
         ]);
 
         try {
             $booking = Booking::create([
                 'user_id'         => Auth::id(),
                 'booking_code'    => 'TIX-' . strtoupper(Str::random(6)),
-                'category'        => 'train',
+                'category'        => $request->category,
                 'nama_penumpang'  => $request->passenger_name,
                 'nomor_ktp'       => $request->id_number,
                 'email'           => $request->email,
                 'no_telp'         => $request->phone,
                 'jumlah_penumpang'=> $request->passenger_count,
-                'total_price'     => 370000 * $request->passenger_count,
+                'total_price'     => $request->item_price * $request->passenger_count,
                 'status'          => 'pending',
             ]);
 
             return redirect()->route('bookings.checkout', ['bookingId' => $booking->id])
-                             ->with('success', 'Data penumpang berhasil disimpan!');
+                             ->with('success', 'Data pemesan berhasil disimpan!');
 
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());

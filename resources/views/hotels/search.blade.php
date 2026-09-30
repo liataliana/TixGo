@@ -112,7 +112,7 @@
                                 <span class="price-main">Rp {{ number_format($hotel->price, 0, ',', '.') }}</span>
                                 <span class="price-per-night">/malam</span>
                                 <br>
-                                <button class="btn-book-hotel">Pilih Kamar</button>
+                                <a href="{{ route('bookings.create.generic', ['category' => 'hotel', 'name' => $hotel->name, 'route' => $hotel->location, 'price' => $hotel->price]) }}" class="btn-book-hotel" style="display:inline-block; text-decoration:none; text-align:center;">Pilih Kamar</a>
                             </div>
                         </div>
                     </div>
