@@ -116,6 +116,7 @@
             <h2>Pilih Metode Pembayaran</h2>
             <form action="{{ route('bookings.pay') }}" method="POST">
                 @csrf
+                <input type="hidden" name="bookingId" value="{{ $booking->id }}">
                 <div class="payment-options">
                     <div class="payment-option selected" onclick="selectPayment(this)">
                         <i class="fa-solid fa-building-columns" style="color:#1e3a5f;"></i>

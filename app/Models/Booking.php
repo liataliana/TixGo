@@ -11,14 +11,22 @@ class Booking extends Model
 
     // ⚠️ Ganti nama di dalam array ini sesuai dengan KOLOM tabel database kamu yang sebenarnya!
     protected $fillable = [
-    'user_id',
-    'category',
-    'nama_penumpang', // Ganti ini jika nama kolom DB aslinya beda
-    'nomor_ktp',      // Ganti ini jika nama kolom DB aslinya beda
-    'email',
-    'no_telp',        // Ganti ini jika nama kolom DB aslinya beda
-    'jumlah_penumpang',// Ganti ini jika nama kolom DB aslinya beda
-    'total_price',
-    'status'
-];
+        'user_id',
+        'flight_id',
+        'booking_code',
+        'category',
+        'nama_penumpang',
+        'passenger_name', // alias / double column from multiple migrations
+        'passenger_email',
+        'passenger_phone',
+        'passenger_count',
+        'nomor_ktp',
+        'email',
+        'no_telp',
+        'jumlah_penumpang',
+        'total_price',
+        'status',
+        'payment_status',
+        'booking_date'
+    ];
 }

@@ -15,7 +15,37 @@ class BookingController extends Controller
 
     public function store(Request $request, $flightId)
     {
-        return redirect()->route('bookings.checkout', ['bookingId' => 1]);
+        $request->validate([
+            'passenger_name'  => 'required|string|max:255',
+            'id_number'       => 'required|string|max:50',
+            'email'           => 'required|email|max:255',
+            'phone'           => 'required|string|max:20',
+            'passenger_count' => 'required|integer|min:1',
+        ]);
+
+        $flight = \App\Models\Flight::findOrFail($flightId);
+
+        $booking = Booking::create([
+            'user_id' => Auth::id(),
+            'flight_id' => $flightId,
+            'booking_code' => 'TIX-' . strtoupper(\Illuminate\Support\Str::random(6)),
+            'category' => 'flight',
+            'passenger_name' => $request->passenger_name,
+            'nama_penumpang' => $request->passenger_name,
+            'passenger_email' => $request->email,
+            'email' => $request->email,
+            'passenger_phone' => $request->phone,
+            'no_telp' => $request->phone,
+            'passenger_count' => $request->passenger_count,
+            'jumlah_penumpang' => $request->passenger_count,
+            'nomor_ktp' => $request->id_number,
+            'total_price' => $flight->price * $request->passenger_count,
+            'status' => 'pending',
+            'payment_status' => 'pending',
+        ]);
+
+        return redirect()->route('bookings.checkout', ['bookingId' => $booking->id])
+                         ->with('success', 'Data penumpang berhasil disimpan!');
     }
 
     // ==========================================
@@ -66,7 +96,39 @@ class BookingController extends Controller
         return view('bookings.checkout', compact('booking'));
     }
 
-    public function pay(Request $request) {}
-    public function success($bookingId) {}
-    public function downloadTicket($bookingId) {}
+    public function pay(Request $request)
+    {
+        $request->validate([
+            'payment_method' => 'required|string',
+            'bookingId' => 'required|exists:bookings,id'
+        ]);
+
+        $booking = Booking::findOrFail($request->bookingId);
+        $booking->update(['status' => 'pending']);
+
+        // Create a mock payment record for Manager to confirm
+        \App\Models\Payment::create([
+            'booking_id' => $booking->id,
+            'user_id' => $booking->user_id,
+            'amount' => $booking->total_price,
+            'payment_method' => $request->payment_method,
+            'status' => 'pending',
+            'payment_date' => now(),
+        ]);
+
+        return redirect()->route('bookings.success', ['bookingId' => $booking->id]);
+    }
+
+    public function success($bookingId)
+    {
+        $booking = Booking::findOrFail($bookingId);
+        return view('bookings.success', compact('booking'));
+    }
+
+    public function downloadTicket($bookingId)
+    {
+        $booking = Booking::findOrFail($bookingId);
+        // This is a mockup for ticket download (just shows a view that looks like a PDF)
+        return view('bookings.ticket', compact('booking'));
+    }
 }
