@@ -40,7 +40,14 @@ class ManagerController extends Controller
             'price' => 'required|numeric|min:0',
         ]);
 
-        Flight::create($request->all());
+        $data = $request->all();
+        // Mengisi default value untuk field yang tidak ada di form tapi dibutuhkan oleh Database
+        $data['airline'] = $data['airline'] ?? 'TixGo Airlines';
+        $data['arrival_time'] = $data['arrival_time'] ?? \Carbon\Carbon::parse($request->departure_time)->addHours(2);
+        $data['capacity'] = $data['capacity'] ?? 100;
+        $data['available_seats'] = $data['available_seats'] ?? 100;
+
+        Flight::create($data);
 
         return redirect()->back()->with('success', 'Penerbangan berhasil ditambahkan!');
     }
