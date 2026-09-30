@@ -17,7 +17,7 @@ class TicketController extends Controller
 
     public function index()
     {
-        $tickets = TixgoTicket::with('category')->latest()->get();
+        $tickets = TixgoTicket::with('category')->latest()->paginate(10);
         $categories = Category::all();
         return view($this->getViewPrefix() . '.tickets.index', compact('tickets', 'categories'));
     }
