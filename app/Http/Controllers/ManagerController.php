@@ -66,11 +66,12 @@ class ManagerController extends Controller
         $payment = Payment::findOrFail($id);
         $payment->update(['status' => 'confirmed']);
 
+        // Mark the booking as CONFIRMED so user sees their ticket is active
         if ($payment->booking) {
             $payment->booking->update(['status' => 'confirmed']);
         }
 
-        return redirect()->back()->with('success', 'Pembayaran berhasil dikonfirmasi!');
+        return redirect()->back()->with('success', 'Pembayaran berhasil dikonfirmasi! Tiket user telah diaktifkan.');
     }
 
     // ==========================================

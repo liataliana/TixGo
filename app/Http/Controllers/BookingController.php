@@ -4,15 +4,20 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Booking;
+use App\Models\Payment;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class BookingController extends Controller
 {
+    // Show form to fill passenger data for flight booking
     public function create($flightId)
     {
-        return view('bookings.create', compact('flightId'));
+        $flight = \App\Models\Flight::findOrFail($flightId);
+        return view('bookings.create', compact('flightId', 'flight'));
     }
 
+    // Store flight booking
     public function store(Request $request, $flightId)
     {
         $request->validate([
@@ -26,34 +31,26 @@ class BookingController extends Controller
         $flight = \App\Models\Flight::findOrFail($flightId);
 
         $booking = Booking::create([
-            'user_id' => Auth::id(),
-            'flight_id' => $flightId,
-            'booking_code' => 'TIX-' . strtoupper(\Illuminate\Support\Str::random(6)),
-            'category' => 'flight',
-            'passenger_name' => $request->passenger_name,
-            'nama_penumpang' => $request->passenger_name,
-            'passenger_email' => $request->email,
-            'email' => $request->email,
-            'passenger_phone' => $request->phone,
-            'no_telp' => $request->phone,
-            'passenger_count' => $request->passenger_count,
-            'jumlah_penumpang' => $request->passenger_count,
-            'nomor_ktp' => $request->id_number,
-            'total_price' => $flight->price * $request->passenger_count,
-            'status' => 'pending',
-            'payment_status' => 'pending',
+            'user_id'         => Auth::id(),
+            'flight_id'       => $flightId,
+            'booking_code'    => 'TIX-' . strtoupper(Str::random(6)),
+            'category'        => 'flight',
+            'nama_penumpang'  => $request->passenger_name,
+            'email'           => $request->email,
+            'no_telp'         => $request->phone,
+            'jumlah_penumpang'=> $request->passenger_count,
+            'nomor_ktp'       => $request->id_number,
+            'total_price'     => $flight->price * $request->passenger_count,
+            'status'          => 'pending',
         ]);
 
         return redirect()->route('bookings.checkout', ['bookingId' => $booking->id])
                          ->with('success', 'Data penumpang berhasil disimpan!');
     }
 
-    // ==========================================
-    // BOOKING KERETA (FINAL MAPPING)
-    // ==========================================
+    // Store train booking
     public function storeTrain(Request $request)
     {
-        // 1. Validasi Input Form (JANGAN DIUBAH!)
         $request->validate([
             'passenger_name'  => 'required|string|max:255',
             'id_number'       => 'required|string|max:50',
@@ -63,31 +60,19 @@ class BookingController extends Controller
         ]);
 
         try {
-            // 🟢 2. MAPPING KOLOM DATABASE (CUBA GANTI BAGIAN 'passenger_name' INI!)
-            // Caranya: Ganti 'passenger_name' dengan nama kolom di tabel booking database kamu.
-            // Contoh: Jika di database kolomnya 'full_name', tulis 'full_name'.
-            $dataToSave = [
-                'user_id'    => Auth::id(),
-                'booking_code' => 'TIX-' . strtoupper(\Illuminate\Support\Str::random(6)),
-                'category'   => 'train',
-                'nama_penumpang' => $request->passenger_name,
-                'passenger_name' => $request->passenger_name,
-                'nomor_ktp'      => $request->id_number,
-                'email'          => $request->email,
-                'passenger_email'=> $request->email,
-                'no_telp'        => $request->phone,
-                'passenger_phone'=> $request->phone,
+            $booking = Booking::create([
+                'user_id'         => Auth::id(),
+                'booking_code'    => 'TIX-' . strtoupper(Str::random(6)),
+                'category'        => 'train',
+                'nama_penumpang'  => $request->passenger_name,
+                'nomor_ktp'       => $request->id_number,
+                'email'           => $request->email,
+                'no_telp'         => $request->phone,
                 'jumlah_penumpang'=> $request->passenger_count,
-                'passenger_count'=> $request->passenger_count,
-                'total_price'    => 370000 * $request->passenger_count,
-                'status'         => 'pending',
-                'payment_status' => 'pending',
-            ];
-            
-            // 3. Simpan ke Database
-            $booking = Booking::create($dataToSave);
+                'total_price'     => 370000 * $request->passenger_count,
+                'status'          => 'pending',
+            ]);
 
-            // 4. Redirect ke Checkout
             return redirect()->route('bookings.checkout', ['bookingId' => $booking->id])
                              ->with('success', 'Data penumpang berhasil disimpan!');
 
@@ -96,45 +81,55 @@ class BookingController extends Controller
         }
     }
 
+    // Show checkout page
     public function checkout($bookingId)
     {
-        $booking = Booking::findOrFail($bookingId);
+        $booking = Booking::with('flight')->findOrFail($bookingId);
+        // Only let the owner see their checkout
+        if ($booking->user_id !== Auth::id()) {
+            abort(403);
+        }
         return view('bookings.checkout', compact('booking'));
     }
 
+    // Process payment (user clicks Bayar Sekarang)
     public function pay(Request $request)
     {
         $request->validate([
             'payment_method' => 'required|string',
-            'bookingId' => 'required|exists:bookings,id'
+            'bookingId'      => 'required|exists:bookings,id'
         ]);
 
         $booking = Booking::findOrFail($request->bookingId);
-        $booking->update(['status' => 'pending']);
 
-        // Create a mock payment record for Manager to confirm
-        \App\Models\Payment::create([
+        if ($booking->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        // Create a payment record (pending, waiting Manager confirmation)
+        Payment::create([
             'booking_id' => $booking->id,
-            'user_id' => $booking->user_id,
-            'amount' => $booking->total_price,
-            'payment_method' => $request->payment_method,
-            'status' => 'pending',
-            'payment_date' => now(),
+            'method'     => $request->payment_method,
+            'status'     => 'pending',
         ]);
+
+        // Keep booking status as pending until Manager confirms
+        $booking->update(['status' => 'pending']);
 
         return redirect()->route('bookings.success', ['bookingId' => $booking->id]);
     }
 
+    // Booking success page
     public function success($bookingId)
     {
-        $booking = Booking::findOrFail($bookingId);
+        $booking = Booking::with(['flight', 'payment'])->findOrFail($bookingId);
         return view('bookings.success', compact('booking'));
     }
 
+    // Download / View E-Ticket
     public function downloadTicket($bookingId)
     {
-        $booking = Booking::findOrFail($bookingId);
-        // This is a mockup for ticket download (just shows a view that looks like a PDF)
+        $booking = Booking::with(['flight', 'user'])->findOrFail($bookingId);
         return view('bookings.ticket', compact('booking'));
     }
 }

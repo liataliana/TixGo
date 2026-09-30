@@ -11,10 +11,9 @@ class Payment extends Model
 
     protected $fillable = [
         'booking_id',
-        'amount',
-        'status', // pending, paid, failed
-        'payment_method', // transfer, credit_card, etc.
-        'payment_proof',
+        'method',
+        'status',
+        'proof_image',
     ];
 
     public function booking()
