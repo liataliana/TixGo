@@ -17,9 +17,9 @@ class ManagerController extends Controller
         $flightsCount = Flight::count();
         $pendingCount = Payment::where('status', 'pending')->count();
         $usersCount = User::count();
+        $bookingsCount = \App\Models\Booking::count();
 
-        // ✅ INI YANG PENTING! Pastikan viewnya manager.dashboard
-        return view('manager.dashboard', compact('flightsCount', 'pendingCount', 'usersCount'));
+        return view('manager.dashboard', compact('flightsCount', 'pendingCount', 'usersCount', 'bookingsCount'));
     }
 
     // ==========================================

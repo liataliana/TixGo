@@ -178,7 +178,8 @@
             @foreach($bookings->take(5) as $booking)
             <div class="booking-card">
                 <div class="ticket-icon">
-                    {{ $booking->category === 'flight' ? '✈️' : ($booking->category === 'train' ? '🚂' : '🚌') }}
+                    @php $icons = ['flight'=>'✈️','hotel'=>'🏨','villa'=>'🏡','train'=>'🚂','bus'=>'🚌']; @endphp
+                    {{ $icons[$booking->category] ?? '🎫' }}
                 </div>
                 <div class="flex-1">
                     <div class="route">

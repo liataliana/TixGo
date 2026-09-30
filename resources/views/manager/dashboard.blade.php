@@ -147,7 +147,7 @@
 
     .stats-grid {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(4, 1fr);
         gap: 1.5rem;
         margin-bottom: 2rem;
         position: relative;
@@ -281,10 +281,18 @@
             <span class="stat-icon"><i class="fa-regular fa-plane"></i></span>
             <div class="stat-label">Total Penerbangan</div>
             <div class="stat-value">{{ $flightsCount ?? 0 }}</div>
-            <div class="stat-sub"><span class="up">↑ 12%</span> dari bulan lalu</div>
+            <div class="stat-sub">Jadwal aktif</div>
         </div>
 
-        <!-- Card 2: Menunggu Konfirmasi -->
+        <!-- Card 2: Semua Booking -->
+        <div class="stat-card">
+            <span class="stat-icon"><i class="fa-regular fa-ticket"></i></span>
+            <div class="stat-label">Total Semua Booking</div>
+            <div class="stat-value">{{ $bookingsCount ?? 0 }}</div>
+            <div class="stat-sub">✈️ 🏨 🏡 🚂 🚌 Semua kategori</div>
+        </div>
+
+        <!-- Card 3: Menunggu Konfirmasi -->
         <div class="stat-card">
             <span class="stat-icon"><i class="fa-regular fa-clock"></i></span>
             <div class="stat-label">Menunggu Konfirmasi</div>
@@ -292,7 +300,7 @@
             <div class="stat-sub"><span class="warning">⚠️ Perlu Tindakan</span></div>
         </div>
 
-        <!-- Card 3: User Terdaftar -->
+        <!-- Card 4: User Terdaftar -->
         <div class="stat-card">
             <span class="stat-icon"><i class="fa-regular fa-users"></i></span>
             <div class="stat-label">User Terdaftar</div>

@@ -110,7 +110,10 @@
             <div class="flex items-start justify-between gap-4">
                 <div class="flex items-center gap-3">
                     <div style="font-size:2.5rem; line-height:1;">
-                        {{ $booking->category === 'flight' ? '✈️' : ($booking->category === 'train' ? '🚂' : '🚌') }}
+                        @php
+                            $icons = ['flight'=>'✈️','hotel'=>'🏨','villa'=>'🏡','train'=>'🚂','bus'=>'🚌'];
+                        @endphp
+                        {{ $icons[$booking->category] ?? '🎫' }}
                     </div>
                     <div>
                         <div class="order-route">
