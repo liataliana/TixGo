@@ -32,11 +32,11 @@
     </div>
 
     <div class="stats-grid">
-        <div class="stat-card"><div class="number">3</div><div class="label">Total Admin</div></div>
-        <div class="stat-card"><div class="number">12</div><div class="label">Total Manager</div></div>
-        <div class="stat-card"><div class="number">1,234</div><div class="label">Total User</div></div>
-        <div class="stat-card"><div class="number">Rp 185 Jt</div><div class="label">Total Pendapatan</div></div>
-        <div class="stat-card"><div class="number" style="color:#22c55e;">98%</div><div class="label">Tingkat Konfirmasi</div></div>
+        <div class="stat-card"><div class="number">{{ $adminCount ?? 0 }}</div><div class="label">Total Admin</div></div>
+        <div class="stat-card"><div class="number">{{ $managerCount ?? 0 }}</div><div class="label">Total Manager</div></div>
+        <div class="stat-card"><div class="number">{{ number_format($userCount ?? 0) }}</div><div class="label">Total User</div></div>
+        <div class="stat-card"><div class="number">Rp {{ number_format(($totalRevenue ?? 0) / 1000000, 0, ',', '.') }} Jt</div><div class="label">Total Pendapatan</div></div>
+        <div class="stat-card"><div class="number" style="color:#22c55e;">{{ $confirmedRate ?? 0 }}%</div><div class="label">Tingkat Konfirmasi</div></div>
     </div>
 
     <div class="report-table">
@@ -52,9 +52,17 @@
                 </tr>
             </thead>
             <tbody>
-                <tr><td>John Doe</td><td>john@email.com</td><td>User</td><td>12</td><td><span style="color:#22c55e;">Aktif</span></td></tr>
-                <tr><td>Admin TixGo</td><td>admin@tixgo.com</td><td>Admin</td><td>-</td><td><span style="color:#22c55e;">Aktif</span></td></tr>
-                <tr><td>Manager 1</td><td>manager1@tixgo.com</td><td>Manager</td><td>-</td><td><span style="color:#22c55e;">Aktif</span></td></tr>
+                @forelse($users as $user)
+                <tr>
+                    <td>{{ $user->name }}</td>
+                    <td>{{ $user->email }}</td>
+                    <td>{{ ucfirst(str_replace('_', ' ', $user->role)) }}</td>
+                    <td>{{ $user->bookings_count ?? $user->bookings()->count() }}</td>
+                    <td><span style="color:#22c55e;">Aktif</span></td>
+                </tr>
+                @empty
+                <tr><td colspan="5" style="text-align:center; color:#94a3b8;">Belum ada user</td></tr>
+                @endforelse
             </tbody>
         </table>
     </div>

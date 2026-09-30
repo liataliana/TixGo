@@ -39,7 +39,7 @@
                     <td class="px-6 py-4 text-green-600 font-bold">Rp {{ number_format($ticket->price, 0, ',', '.') }}</td>
                     <td class="px-6 py-4">{{ $ticket->stock }}</td>
                     <td class="px-6 py-4">
-                        @if($ticket->status == 'active')
+                        @if($ticket->is_active)
                             <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                 Aktif
                             </span>

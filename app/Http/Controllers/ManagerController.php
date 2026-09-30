@@ -57,7 +57,7 @@ class ManagerController extends Controller
     // ==========================================
     public function paymentsIndex()
     {
-        $payments = Payment::where('status', 'pending')->get();
+        $payments = Payment::with('booking.user')->where('status', 'pending')->get();
         return view('manager.payments', compact('payments'));
     }
 

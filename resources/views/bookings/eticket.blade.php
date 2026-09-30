@@ -23,8 +23,8 @@
             <div class="row"><span class="label">Maskapai</span><span class="value">{{ $booking->flight->airline }}</span></div>
             <div class="row"><span class="label">Rute</span><span class="value">{{ $booking->flight->origin }} → {{ $booking->flight->destination }}</span></div>
             <div class="row"><span class="label">Keberangkatan</span><span class="value">{{ $booking->flight->departure_time->format('d M Y, H:i') }}</span></div>
-            <div class="row"><span class="label">Penumpang</span><span class="value">{{ $booking->passenger_name }}</span></div>
-            <div class="row"><span class="label">Jumlah</span><span class="value">{{ $booking->passenger_count }} orang</span></div>
+            <div class="row"><span class="label">Penumpang</span><span class="value">{{ $booking->nama_penumpang }}</span></div>
+            <div class="row"><span class="label">Jumlah</span><span class="value">{{ $booking->jumlah_penumpang }} orang</span></div>
             <div class="row"><span class="label">Total Dibayar</span><span class="value">Rp {{ number_format($booking->total_price, 0, ',', '.') }}</span></div>
         </div>
         <div class="footer">Terima kasih telah menggunakan TixGo. Selamat terbang!</div>

@@ -130,6 +130,6 @@ class BookingController extends Controller
     public function downloadTicket($bookingId)
     {
         $booking = Booking::with(['flight', 'user'])->findOrFail($bookingId);
-        return view('bookings.ticket', compact('booking'));
+        return view('bookings.eticket', compact('booking'));
     }
 }

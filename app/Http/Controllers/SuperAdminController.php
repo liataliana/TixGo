@@ -36,7 +36,7 @@ class SuperAdminController extends Controller
     public function edit($id)
     {
         $user = User::findOrFail($id);
-        return view('superadmin.users-edit', compact('user'));
+        return redirect()->route('superadmin.users.index')->with('info', 'Gunakan tombol ubah role di halaman daftar user.');
     }
 
     public function update(Request $request, $id)
@@ -78,6 +78,13 @@ class SuperAdminController extends Controller
 
     public function reports()
     {
-        return view('superadmin.reports');
+        $adminCount = User::where('role', 'super_admin')->count();
+        $managerCount = User::where('role', 'manager')->count();
+        $userCount = User::where('role', 'user')->count();
+        $totalRevenue = Booking::where('status', 'confirmed')->sum('total_price');
+        $confirmedRate = Booking::count() > 0 ? round((Booking::where('status', 'confirmed')->count() / Booking::count()) * 100) : 0;
+        $users = User::latest()->get();
+
+        return view('superadmin.reports', compact('adminCount', 'managerCount', 'userCount', 'totalRevenue', 'confirmedRate', 'users'));
     }
 }

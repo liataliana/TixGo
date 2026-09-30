@@ -80,8 +80,8 @@
             <div>
                 <label for="status" class="block text-sm font-semibold text-gray-700 mb-2">Status</label>
                 <select name="status" id="status" class="w-full rounded-xl border-gray-300 focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-20 transition-shadow @error('status') border-red-500 @enderror">
-                    <option value="active" {{ old('status', $ticket->status) == 'active' ? 'selected' : '' }}>Aktif</option>
-                    <option value="inactive" {{ old('status', $ticket->status) == 'inactive' ? 'selected' : '' }}>Tidak Aktif</option>
+                    <option value="1" {{ old('is_active', $ticket->is_active) ? 'selected' : '' }}>Aktif</option>
+                    <option value="0" {{ !old('is_active', $ticket->is_active) ? 'selected' : '' }}>Tidak Aktif</option>
                 </select>
                 @error('status')
                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>

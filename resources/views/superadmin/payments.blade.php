@@ -392,7 +392,7 @@
                         </td>
                         <td>
                             <span class="price-tag">
-                                Rp {{ number_format($payment->amount, 0, ',', '.') }}
+                                Rp {{ number_format(optional($payment->booking)->total_price ?? 0, 0, ',', '.') }}
                             </span>
                         </td>
                         <td>

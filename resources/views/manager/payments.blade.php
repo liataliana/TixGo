@@ -640,13 +640,13 @@
                             </td>
                             <td>
                                 <span class="price-tag-payment">
-                                    Rp {{ number_format($payment->amount, 0, ',', '.') }}
+                                    Rp {{ number_format(optional($payment->booking)->total_price ?? 0, 0, ',', '.') }}
                                 </span>
                             </td>
                             <td>
                                 <span class="method-badge">
                                     <i class="fa-regular fa-building-columns"></i>
-                                    {{ $payment->payment_method ?? 'Transfer' }}
+                                    {{ $payment->method ?? 'Transfer' }}
                                 </span>
                             </td>
                             <td>
