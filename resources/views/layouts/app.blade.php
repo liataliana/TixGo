@@ -444,9 +444,21 @@
                     <a href="{{ route('superadmin.dashboard') }}" class="sidebar-link {{ request()->routeIs('superadmin.dashboard') ? 'active' : '' }}">
                         <i class="fa-solid fa-chart-pie"></i> Dashboard
                     </a>
+
+                    {{-- Kelola Akun --}}
+                    <div style="padding: 0.4rem 1rem 0.2rem; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(255,255,255,0.35); font-weight: 700;">Kelola Akun</div>
                     <a href="{{ route('superadmin.users.index') }}" class="sidebar-link {{ request()->routeIs('superadmin.users.*') ? 'active' : '' }}">
-                        <i class="fa-solid fa-users"></i> Kelola Users
+                        <i class="fa-solid fa-users"></i> Semua User
                     </a>
+                    <a href="{{ route('superadmin.managers.create') }}" class="sidebar-link {{ request()->routeIs('superadmin.managers.*') ? 'active' : '' }}">
+                        <i class="fa-solid fa-user-plus"></i> Tambah Akun
+                    </a>
+                    <a href="{{ route('superadmin.activity-log') }}" class="sidebar-link {{ request()->routeIs('superadmin.activity-log') ? 'active' : '' }}">
+                        <i class="fa-solid fa-clock-rotate-left"></i> Log Aktivitas
+                    </a>
+
+                    {{-- Kelola Sistem --}}
+                    <div style="padding: 0.4rem 1rem 0.2rem; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(255,255,255,0.35); font-weight: 700;">Kelola Sistem</div>
                     <a href="{{ route('superadmin.flights.index') }}" class="sidebar-link {{ request()->routeIs('superadmin.flights.*') ? 'active' : '' }}">
                         <i class="fa-solid fa-plane"></i> Penerbangan
                     </a>
@@ -464,17 +476,23 @@
                     <a href="{{ route('manager.dashboard') }}" class="sidebar-link {{ request()->routeIs('manager.dashboard') ? 'active' : '' }}">
                         <i class="fa-solid fa-chart-pie"></i> Dashboard
                     </a>
+
+                    {{-- Tugas Manager --}}
+                    <div style="padding: 0.4rem 1rem 0.2rem; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(255,255,255,0.35); font-weight: 700;">Tugas Manager</div>
                     <a href="{{ route('manager.flights.index') }}" class="sidebar-link {{ request()->routeIs('manager.flights.*') ? 'active' : '' }}">
                         <i class="fa-solid fa-plane"></i> Kelola Jadwal
                     </a>
                     <a href="{{ route('manager.payments.index') }}" class="sidebar-link {{ request()->routeIs('manager.payments.*') ? 'active' : '' }}">
                         <i class="fa-solid fa-credit-card"></i> Konfirmasi Pembayaran
                     </a>
-                    <a href="{{ route('manager.users.index') }}" class="sidebar-link {{ request()->routeIs('manager.users.*') ? 'active' : '' }}">
-                        <i class="fa-solid fa-users"></i> Daftar User
-                    </a>
                     <a href="{{ route('manager.tickets.index') }}" class="sidebar-link {{ request()->routeIs('manager.tickets.*') ? 'active' : '' }}">
                         <i class="fa-solid fa-ticket"></i> Kelola Tiket
+                    </a>
+
+                    {{-- Informasi --}}
+                    <div style="padding: 0.4rem 1rem 0.2rem; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(255,255,255,0.35); font-weight: 700;">Informasi</div>
+                    <a href="{{ route('manager.users.index') }}" class="sidebar-link {{ request()->routeIs('manager.users.*') ? 'active' : '' }}">
+                        <i class="fa-solid fa-users"></i> Daftar Member
                     </a>
                 @endif
 

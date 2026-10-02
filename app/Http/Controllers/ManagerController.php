@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Flight;
 use App\Models\Payment;
 use App\Models\User;
+use App\Models\ActivityLog;
 
 class ManagerController extends Controller
 {
@@ -14,16 +15,16 @@ class ManagerController extends Controller
     // ==========================================
     public function dashboard()
     {
-        $flightsCount = Flight::count();
-        $pendingCount = Payment::where('status', 'pending')->count();
-        $usersCount = User::count();
+        $flightsCount  = Flight::count();
+        $pendingCount  = Payment::where('status', 'pending')->count();
+        $usersCount    = User::where('role', 'user')->count(); // hanya user biasa
+        $bookingsCount = \App\Models\Booking::count();
 
-        // ✅ INI YANG PENTING! Pastikan viewnya manager.dashboard
-        return view('manager.dashboard', compact('flightsCount', 'pendingCount', 'usersCount'));
+        return view('manager.dashboard', compact('flightsCount', 'pendingCount', 'usersCount', 'bookingsCount'));
     }
 
     // ==========================================
-    // FLIGHTS
+    // FLIGHTS — Manager bisa tambah jadwal
     // ==========================================
     public function flightsIndex()
     {
@@ -34,26 +35,35 @@ class ManagerController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'origin' => 'required|string',
-            'destination' => 'required|string',
+            'origin'         => 'required|string',
+            'destination'    => 'required|string',
             'departure_time' => 'required|date',
-            'price' => 'required|numeric|min:0',
+            'price'          => 'required|numeric|min:0',
         ]);
 
         $data = $request->all();
-        // Mengisi default value untuk field yang tidak ada di form tapi dibutuhkan oleh Database
-        $data['airline'] = $data['airline'] ?? 'TixGo Airlines';
-        $data['arrival_time'] = $data['arrival_time'] ?? \Carbon\Carbon::parse($request->departure_time)->addHours(2);
-        $data['capacity'] = $data['capacity'] ?? 100;
+        $data['airline']         = $data['airline'] ?? 'TixGo Airlines';
+        $data['arrival_time']    = $data['arrival_time'] ?? \Carbon\Carbon::parse($request->departure_time)->addHours(2);
+        $data['capacity']        = $data['capacity'] ?? 100;
         $data['available_seats'] = $data['available_seats'] ?? 100;
 
-        Flight::create($data);
+        $flight = Flight::create($data);
+
+        // Log aktivitas
+        ActivityLog::create([
+            'user_id'     => auth()->id(),
+            'role'        => 'manager',
+            'action'      => 'add_flight',
+            'description' => "Menambahkan jadwal penerbangan: {$flight->origin} → {$flight->destination} pada " . \Carbon\Carbon::parse($flight->departure_time)->format('d M Y H:i'),
+            'target_type' => 'Flight',
+            'target_id'   => $flight->id,
+        ]);
 
         return redirect()->back()->with('success', 'Penerbangan berhasil ditambahkan!');
     }
 
     // ==========================================
-    // PAYMENTS
+    // PAYMENTS — Manager konfirmasi pembayaran
     // ==========================================
     public function paymentsIndex()
     {
@@ -66,20 +76,32 @@ class ManagerController extends Controller
         $payment = Payment::findOrFail($id);
         $payment->update(['status' => 'confirmed']);
 
-        // Mark the booking as CONFIRMED so user sees their ticket is active
         if ($payment->booking) {
             $payment->booking->update(['status' => 'confirmed']);
         }
+
+        // Log aktivitas
+        $bookingCode = optional($payment->booking)->booking_code ?? "ID#{$id}";
+        $userName    = optional(optional($payment->booking)->user)->name ?? 'Unknown';
+        ActivityLog::create([
+            'user_id'     => auth()->id(),
+            'role'        => 'manager',
+            'action'      => 'confirm_payment',
+            'description' => "Mengkonfirmasi pembayaran booking {$bookingCode} atas nama {$userName}",
+            'target_type' => 'Payment',
+            'target_id'   => $payment->id,
+        ]);
 
         return redirect()->back()->with('success', 'Pembayaran berhasil dikonfirmasi! Tiket user telah diaktifkan.');
     }
 
     // ==========================================
-    // USERS
+    // USERS — Manager HANYA lihat role=user
+    // (Tidak bisa lihat super_admin / sesama manager)
     // ==========================================
     public function usersIndex()
     {
-        $users = User::all();
+        $users = User::where('role', 'user')->orderBy('name')->get();
         return view('manager.users', compact('users'));
     }
 }

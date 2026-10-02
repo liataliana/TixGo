@@ -15,11 +15,21 @@ class TicketController extends Controller
         return $role === 'super_admin' ? 'superadmin' : 'manager';
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $tickets = TixgoTicket::with('category')->latest()->paginate(10);
+        $selectedCategory = $request->query('category'); // e.g. 'hotel', 'bus', etc.
+
+        $query = TixgoTicket::with('category')->latest();
+
+        if ($selectedCategory) {
+            $query->whereHas('category', function ($q) use ($selectedCategory) {
+                $q->where('name', 'like', '%' . $selectedCategory . '%');
+            });
+        }
+
+        $tickets    = $query->paginate(15)->withQueryString();
         $categories = Category::all();
-        return view($this->getViewPrefix() . '.tickets.index', compact('tickets', 'categories'));
+        return view($this->getViewPrefix() . '.tickets.index', compact('tickets', 'categories', 'selectedCategory'));
     }
 
     public function create()

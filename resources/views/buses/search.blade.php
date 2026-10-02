@@ -231,7 +231,7 @@
                 <span class="bus-price">Rp {{ number_format($bus->price, 0, ',', '.') }}</span>
                 <span class="bus-seats">{{ $bus->seats_left }} kursi tersisa</span>
                 
-                <a href="{{ route('bookings.create.train') }}" class="btn-booking">
+                <a href="{{ route('bookings.create.generic', ['category' => 'bus', 'name' => $bus->name, 'route' => $bus->route, 'price' => $bus->price]) }}" class="btn-booking">
                     Pilih
                 </a>
             </div>

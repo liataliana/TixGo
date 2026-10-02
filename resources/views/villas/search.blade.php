@@ -165,7 +165,7 @@
                             
                             <!-- TOMBOL BOOKING BARU -->
                             <div class="btn-book-wrapper">
-                               <a href="{{ route('bookings.create.train') }}" class="btn-book-villa">   
+                               <a href="{{ route('bookings.create.generic', ['category' => 'villa', 'name' => $villa->name, 'route' => $villa->location, 'price' => $villa->price]) }}" class="btn-book-villa">   
                                     <i class="fa-regular fa-circle-check"></i> Booking Sekarang
                                 </a>
                             </div>

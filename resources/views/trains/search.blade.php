@@ -88,7 +88,7 @@
             <div class="train-price">Rp {{ number_format($train->price, 0, ',', '.') }}</div>
             <div class="train-seats">per orang</div>
         </div>
-        <a href="{{ route('bookings.create.train') }}" class="btn-pesan">
+        <a href="{{ route('bookings.create.generic', ['category' => 'train', 'name' => $train->name, 'route' => $train->route, 'price' => $train->price]) }}" class="btn-pesan">
             Pesan <i class="fa-solid fa-arrow-right ml-1"></i>
         </a>
     </div>
