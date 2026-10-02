@@ -176,34 +176,34 @@
         {{-- DETAIL --}}
         <div class="detail-card">
             <div class="train-header">
-                <h2>🚆 Harina 96</h2>
-                <span class="price-tag">Rp 370.000</span>
+                <h2>🚆 {{ $train->name }}</h2>
+                <span class="price-tag">Rp {{ number_format($train->price, 0, ',', '.') }}</span>
             </div>
 
             <div class="refund-banner">
-                <p><i class="fa-regular fa-clock"></i> Cepat habis! Terlaris #1 di kelas ini</p>
+                <p><i class="fa-regular fa-clock"></i> Cepat habis! Sisa {{ $train->seats_left }} kursi</p>
             </div>
 
             <div class="detail-grid">
                 <div class="detail-item">
                     <span class="label">Rute</span>
-                    <span class="value">Bandung (BD) → Surabaya Pasarturi (SBI)</span>
+                    <span class="value">{{ $train->route }}</span>
                 </div>
                 <div class="detail-item">
                     <span class="label">Kelas</span>
-                    <span class="value">Ekonomi <span class="subclass">(Subclass CC)</span></span>
+                    <span class="value">{{ $train->class }}</span>
                 </div>
                 <div class="detail-item">
                     <span class="label">Keberangkatan</span>
-                    <span class="value">02 Agt 2026, 21:35</span>
+                    <span class="value">{{ $train->departure }}</span>
                 </div>
                 <div class="detail-item">
                     <span class="label">Kedatangan</span>
-                    <span class="value">03 Agt 2026, 08:25 <span class="duration">(10j 50m)</span></span>
+                    <span class="value">{{ $train->arrival }} <span class="duration">({{ $train->duration }})</span></span>
                 </div>
                 <div class="detail-item">
                     <span class="label">Kursi Tersedia</span>
-                    <span class="value" style="color:#22c55e;">12 kursi</span>
+                    <span class="value" style="color:#22c55e;">{{ $train->seats_left }} kursi</span>
                 </div>
                 <div class="detail-item">
                     <span class="label">Operator</span>
@@ -211,7 +211,7 @@
                 </div>
             </div>
 
-            <a href="{{ route('bookings.create.train') }}" class="btn-book">
+            <a href="{{ route('bookings.create.generic', ['category'=>'train','name'=>$train->name,'route'=>$train->route,'price'=>$train->price]) }}" class="btn-book">
                 <i class="fa-regular fa-pen-to-square"></i> Lanjutkan Pemesanan
             </a>
         </div>
@@ -221,19 +221,19 @@
             <h3>Ringkasan</h3>
             <div class="summary-row">
                 <span class="label">Kereta</span>
-                <span class="value">Harina 96</span>
+                <span class="value">{{ $train->name }}</span>
             </div>
             <div class="summary-row">
                 <span class="label">Rute</span>
-                <span class="value">BD → SBI</span>
+                <span class="value">{{ $train->route }}</span>
             </div>
             <div class="summary-row">
-                <span class="label">Tanggal</span>
-                <span class="value">02 Agt 2026</span>
+                <span class="label">Durasi</span>
+                <span class="value">{{ $train->duration }}</span>
             </div>
             <div class="summary-row">
                 <span class="label">Kelas</span>
-                <span class="value">Ekonomi (CC)</span>
+                <span class="value">{{ $train->class }}</span>
             </div>
             <div class="summary-row">
                 <span class="label">Jumlah Penumpang</span>
@@ -241,7 +241,7 @@
             </div>
             <div class="summary-total">
                 <span>Total</span>
-                <span>Rp 370.000</span>
+                <span>Rp {{ number_format($train->price, 0, ',', '.') }}</span>
             </div>
             <div style="margin-top:12px; font-size:12px; color:#94a3b8; text-align:center;">
                 <i class="fa-regular fa-circle-check" style="color:#22c55e;"></i> Harga sudah termasuk pajak
